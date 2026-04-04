@@ -148,15 +148,20 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
   // ── Bottom sheet content per archetype ──────────────────────────
   const isSam = activeArchetype === 'squeezed-saver';
   const deliveryFeeFormatted = `£${(basket.deliveryFee / 100).toFixed(2)}`;
-  const accumulatedFees = '£15.00'; // demo value matching Figma
 
   const bottomSheetHeadline = isSam ? 'Wake up, Sam!' : 'Ready to optimise, Alex?';
 
   const bottomSheetBody = isSam ? (
     <p style={{ margin: 0 }}>
-      {'We noticed you\'ve spent '}
-      <span style={{ fontWeight: 700 }}>{accumulatedFees}</span>
-      {' on delivery fees lately. That\'s a massive \'convenience tax.\''}
+      {'You\'ve hit '}
+      <span style={{ fontWeight: 700 }}>£15.00</span>
+      {' in delivery fees this month—that\'s money that could\'ve stayed in your pocket. Stop paying the \'convenience tax\' today. Start your '}
+      <span style={{ fontWeight: 700 }}>14-day free trial</span>
+      {' of '}
+      <span style={{ fontWeight: 700 }}>JET+</span>
+      {' and take '}
+      <span style={{ fontWeight: 700 }}>£3.50</span>
+      {' off this order instantly.'}
     </p>
   ) : (
     <p style={{ margin: 0 }}>

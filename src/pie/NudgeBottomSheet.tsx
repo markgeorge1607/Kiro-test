@@ -53,7 +53,7 @@ export interface NudgeBottomSheetProps {
 }
 
 const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
-  body, bannerText, onStartTrial, onClose,
+  body, onStartTrial, onClose,
 }) => {
   return (
     <>
@@ -151,17 +151,8 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
         </div>
         </div>{/* end scrollable content */}
 
-          {/* CTA banner + button — sticky at bottom */}
+          {/* Button — sticky at bottom */}
           <div style={{ padding: '0 16px 32px', background: 'white', flexShrink: 0 }}>
-            {/* CTA banner */}
-            <div style={{
-              margin: '0 0 12px', padding: 8, borderRadius: 8,
-              border: `1px solid ${colorBrand}`, overflow: 'hidden',
-              backgroundImage: 'linear-gradient(126deg, rgb(255,242,229) 11%, rgb(253,223,195) 42%, rgb(255,211,191) 87%)',
-              textAlign: 'center', fontSize: 14, lineHeight: '20px', color: colorDefault,
-            }}>
-              {bannerText}
-            </div>
             <button
               type="button"
               onClick={onStartTrial}
