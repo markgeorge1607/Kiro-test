@@ -51,13 +51,13 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const [nudgeEvent, setNudgeEvent] = useState<NudgeEvent | null>(null);
   const [activeArchetype, setActiveArchetype] = useState<string | null>(null);
 
+  // Register PIE components once on mount, clean up on unmount
+  useEffect(() => {
     registerComponent('savings-badge', SavingsBadge);
     registerComponent('quick-toggle', QuickToggle);
     registerComponent('confetti', ConfettiAnimation);
     registerComponent('archetype-toggle', ArchetypeToggle);
     registerComponent('celebration-sheet', CelebrationBottomSheet);
-    registerComponent('confetti', ConfettiAnimation);
-    registerComponent('archetype-toggle', ArchetypeToggle);
 
     return () => {
       clearRegistry();
@@ -70,7 +70,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     if (result) {
       setActiveArchetype(result.archetypeName);
 
-      // Sync basket total from React state so the MOV gate uses the real value (Req 14.1)
       const basketTotal = basket.items.reduce(
         (sum, item) => sum + item.price * item.quantity,
         0,
@@ -78,10 +77,18 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
       controller.updateBasketTotal(basketTotal);
 
       if (basket.deliveryFee > 0) {
+        const event = controller.handleItemAdded(basket.deliveryFee);
+        setNudgeEvent(event);
+      }
+    } else {
+      setActiveArchetype(null);
+      setNudgeEvent(null);
+    }
+  }, [controller, userId, basket.deliveryFee]);
+
   // Handle PIE interaction events
   const handleInteraction = useCallback(
     (event: PIEInteractionEvent) => {
-      // When quick-toggle is toggled on, activate the trial via BasketContext
       if (
         event.componentType === 'quick-toggle' &&
         event.action === 'toggled-on'
@@ -89,7 +96,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         activateTrial();
       }
 
-      // When celebration-sheet is dismissed, clear the nudge event (Req 3.4, 4.4)
       if (
         event.componentType === 'celebration-sheet' &&
         event.action === 'dismissed'
@@ -98,26 +104,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         return;
       }
 
-      // Pass all interactions to the controller to advance the sequence
-      const nextEvent = controller.handleInteraction(event);
-      setNudgeEvent(nextEvent);
-    },
-    [controller, activateTrial],
-  );}
-  }, [controller, userId, basket.deliveryFee]);
-
-  // Handle PIE interaction events
-  const handleInteraction = useCallback(
-    (event: PIEInteractionEvent) => {
-      // When quick-toggle is toggled on, activate the trial via BasketContext
-      if (
-        event.componentType === 'quick-toggle' &&
-        event.action === 'toggled-on'
-      ) {
-        activateTrial();
-      }
-
-      // Pass all interactions to the controller to advance the sequence
       const nextEvent = controller.handleInteraction(event);
       setNudgeEvent(nextEvent);
     },
