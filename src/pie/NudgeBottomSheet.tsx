@@ -53,7 +53,7 @@ export interface NudgeBottomSheetProps {
 }
 
 const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
-  headline, body, bannerText, onStartTrial, onClose,
+  body, bannerText, onStartTrial, onClose,
 }) => {
   return (
     <>
@@ -110,13 +110,13 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
             position: 'absolute', top: 53, left: -100, width: 379, height: 237, opacity: 0.3,
             pointerEvents: 'none', transform: 'rotate(180deg)',
           }} />
-          {/* "Join Just Eat+" title */}
+          {/* "Seriously, Sam?" title */}
           <div style={{
             position: 'absolute', top: 145, left: 0, right: 0, padding: '0 16px 8px',
             textAlign: 'center',
           }}>
             <p style={{ margin: 0, fontSize: 32, lineHeight: '36px', fontWeight: 1000, fontStyle: 'italic', color: colorDefault }}>
-              Join Just Eat+
+              Seriously, Sam?
             </p>
           </div>
           {/* JET+ logo */}
@@ -134,12 +134,9 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
           position: 'relative', zIndex: 1,
           boxShadow: '0px 4px 6px 0px rgba(0,0,0,0.02), 0px 2px 12px 2px rgba(0,0,0,0.04), 0px 3px 4px 0px rgba(0,0,0,0.04)',
         }}>
-          {/* Headline + body */}
+          {/* Body */}
           <div style={{ padding: '24px 21px 0', textAlign: 'center' }}>
-            <p style={{ margin: 0, fontSize: 24, fontWeight: 900, lineHeight: '28px', color: colorDefault }}>
-              {headline}
-            </p>
-            <div style={{ marginTop: 8, fontSize: 16, fontWeight: 400, lineHeight: '24px', color: colorDefault }}>
+            <div style={{ fontSize: 16, fontWeight: 400, lineHeight: '24px', color: colorDefault }}>
               {body}
             </div>
           </div>
