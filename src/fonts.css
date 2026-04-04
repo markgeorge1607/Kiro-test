@@ -1,0 +1,41 @@
+/* ── JET Sans Digital — local font faces ──────────────────────────── */
+
+@font-face {
+  font-family: 'JET Sans Digital';
+  src: url('/Font/JETSans-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JET Sans Digital';
+  src: url('/Font/JETSans-BoldItalic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JET Sans Digital';
+  src: url('/Font/JETSans-ExtraBoldItalic.otf') format('opentype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JET Sans Digital';
+  src: url('/Font/JETSans-BlackItalic.otf') format('opentype');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JET Sans Digital';
+  src: url('/Font/JETSans-ExtraBlackItalic.otf') format('opentype');
+  font-weight: 1000;
+  font-style: italic;
+  font-display: swap;
+}

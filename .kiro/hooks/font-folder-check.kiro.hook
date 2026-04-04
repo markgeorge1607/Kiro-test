@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Font Folder Reference Check",
+  "description": "Before writing files, checks that any font references use the Font folder with the correct JETSans font files: JETSans-BlackItalic.otf, JETSans-BoldItalic.otf, JETSans-ExtraBlackItalic.otf, JETSans-ExtraBoldItalic.otf, JETSans-Italic.otf",
+  "version": "1",
+  "when": {
+    "type": "preToolUse",
+    "toolTypes": [
+      "write"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "If this file write includes any font-face declarations, font-family references, or font file paths, ensure they reference the fonts from the `Font/` folder using only these available files: Font/JETSans-BlackItalic.otf, Font/JETSans-BoldItalic.otf, Font/JETSans-ExtraBlackItalic.otf, Font/JETSans-ExtraBoldItalic.otf, Font/JETSans-Italic.otf. Do not reference any font files that are not in this list. If no font references are present, proceed as normal."
+  }
+}

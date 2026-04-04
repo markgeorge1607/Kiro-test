@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Auto-refresh MenuPage on save",
+  "description": "Automatically triggers a dev server update when MenuPage.tsx is edited, so design changes are immediately visible in the browser.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "src/menu/MenuPage.tsx"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "The MenuPage.tsx file was just edited. Review the changes and ensure the Vite dev server will pick them up. If the dev server is not running, remind the user to start it with `npm run dev`. If there are any TypeScript or rendering issues in the updated file, flag them immediately so the user sees a working design update in the browser."
+  }
+}

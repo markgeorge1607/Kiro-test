@@ -1,0 +1,15 @@
+{
+  "enabled": true,
+  "name": "Verify Build & Requirements",
+  "description": "After the agent finishes work, runs the full test suite and type checks to ensure the build is up to date with the spec requirements ,no bugs or issues are present and frontend UI has been updated.",
+  "version": "1",
+  "when": {
+    "type": "agentStop"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Run `npx vitest --run` and `npx tsc --noEmit` to verify the build compiles cleanly and all tests pass. If any tests fail or type errors are found, investigate the failures against the requirements in `.kiro/specs/conversational-nudge-layer/requirements.md` and the tasks in `.kiro/specs/conversational-nudge-layer/tasks.md`. Fix any issues you find — ensure the code is aligned with the spec requirements and all tests are green before finishing."
+  },
+  "workspaceFolderName": "JET+ Chat",
+  "shortName": "verify-build-requirements"
+}
