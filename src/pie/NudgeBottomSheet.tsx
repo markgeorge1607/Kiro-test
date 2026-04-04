@@ -152,7 +152,7 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
         </div>{/* end scrollable content */}
 
           {/* Button — sticky at bottom */}
-          <div style={{ padding: '0 16px 32px', background: 'white', flexShrink: 0 }}>
+          <div style={{ padding: '16px 16px 32px', background: 'white', flexShrink: 0 }}>
             <button
               type="button"
               onClick={onStartTrial}

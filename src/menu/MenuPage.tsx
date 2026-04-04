@@ -153,15 +153,13 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
 
   const bottomSheetBody = isSam ? (
     <p style={{ margin: 0 }}>
-      {'You\'ve hit '}
-      <span style={{ fontWeight: 700 }}>£15.00</span>
-      {' in delivery fees this month—that\'s money that could\'ve stayed in your pocket. Stop paying the \'convenience tax\' today. Start your '}
-      <span style={{ fontWeight: 700 }}>14-day free trial</span>
-      {' of '}
-      <span style={{ fontWeight: 700 }}>JET+</span>
-      {' and take '}
+      {'Stop paying the \'convenience tax.\' You\'ve spent '}
+      <span style={{ fontWeight: 700 }}>£15</span>
+      {' on delivery this month—save '}
       <span style={{ fontWeight: 700 }}>£3.50</span>
-      {' off this order instantly.'}
+      {' on this order with a free '}
+      <span style={{ fontWeight: 700 }}>14-day JET+ trial</span>
+      {'.'}
     </p>
   ) : (
     <p style={{ margin: 0 }}>
