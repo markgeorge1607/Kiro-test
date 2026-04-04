@@ -74,7 +74,7 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
         style={{
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1000,
           background: 'white', borderRadius: '16px 16px 0 0',
-          fontFamily: font, maxWidth: 375, margin: '0 auto',
+          fontFamily: font, maxWidth: 480, margin: '0 auto',
           maxHeight: '95vh', display: 'flex', flexDirection: 'column',
         }}
       >

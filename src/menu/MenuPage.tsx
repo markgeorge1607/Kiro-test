@@ -505,7 +505,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
         return (
           <div style={{
             position: 'fixed', bottom: 0, left: 0, right: 0,
-            maxWidth: 375, margin: '0 auto',
+            maxWidth: 480, margin: '0 auto',
             zIndex: 100,
           }}>
             {/* MOV message */}

@@ -35,7 +35,7 @@ const App: React.FC = () => {
   return (
     <div style={{
       width: '100%',
-      maxWidth: 375,
+      maxWidth: 480,
       margin: '0 auto',
       position: 'relative',
       background: 'white',

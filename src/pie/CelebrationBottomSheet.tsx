@@ -137,7 +137,7 @@ const CelebrationBottomSheet: React.FC<PIEComponentProps> = ({ directive, onInte
           borderRadius: '12px 12px 0 0',
           overflow: 'visible',
           fontFamily: font,
-          maxWidth: 375, margin: '0 auto',
+          maxWidth: 480, margin: '0 auto',
           boxShadow: '0px -3px 6px 0px rgba(0,0,0,0.06), 0px -2px 12px -2px rgba(0,0,0,0.08), 0px -4px 6px 0px rgba(0,0,0,0.02)',
           animation: 'celebration-slide-up 0.3s ease-out',
         }}
