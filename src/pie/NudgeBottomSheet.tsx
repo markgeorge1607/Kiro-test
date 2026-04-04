@@ -53,8 +53,9 @@ export interface NudgeBottomSheetProps {
 }
 
 const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
-  body, onStartTrial, onClose,
+  archetype, body, onStartTrial, onClose,
 }) => {
+  const heroTitle = archetype === 'value-seeker' ? 'Alex, did you know?' : 'Seriously, Sam?';
   return (
     <>
       {/* Backdrop overlay */}
@@ -116,7 +117,7 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
             textAlign: 'center',
           }}>
             <p style={{ margin: 0, fontSize: 32, lineHeight: '36px', fontWeight: 1000, fontStyle: 'italic', color: colorDefault }}>
-              Seriously, Sam?
+              {heroTitle}
             </p>
           </div>
           {/* JET+ logo */}
