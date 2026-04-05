@@ -58,6 +58,16 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
   const heroTitle = archetype === 'value-seeker' ? 'Alex, did you know?' : 'Seriously, Sam?';
   return (
     <>
+      <style>{`
+        @keyframes nudge-slide-up {
+          from { transform: translateY(100%); }
+          to { transform: translateY(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .nudge-bottom-sheet { animation: none !important; }
+        }
+      `}</style>
+
       {/* Backdrop overlay */}
       <div
         onClick={onClose}
@@ -69,6 +79,7 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
 
       {/* Bottom sheet */}
       <div
+        className="nudge-bottom-sheet"
         role="dialog"
         aria-modal="true"
         aria-label="JET+ trial offer"
@@ -77,6 +88,7 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
           background: 'white', borderRadius: '16px 16px 0 0',
           fontFamily: font, maxWidth: 480, margin: '0 auto',
           maxHeight: '95vh', display: 'flex', flexDirection: 'column',
+          animation: 'nudge-slide-up 0.35s ease-out',
         }}
       >
         {/* Scrollable content area */}
