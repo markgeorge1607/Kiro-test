@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Figma Design Spec Enforcement",
+  "description": "When a prompt contains a Figma link, reminds the agent to ensure the implementation matches the exact design spec from the PIE Library steering file (.kiro/steering/PIE Library.md).",
+  "version": "1",
+  "when": {
+    "type": "promptSubmit"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A Figma link was detected. You MUST ensure the implementation matches the exact design spec defined in the PIE Library steering file (.kiro/steering/PIE Library.md). This includes: PIE Design System foundations, correct design token usage (alias tokens over hard-coded values), product orange for interactive elements, JET Sans Digital typography, 4px spacing scale, correct radius/elevation/motion tokens, WCAG 2.1 contrast compliance, and reduced-motion alternatives. Cross-reference the Figma design with these rules and do not deviate from the spec."
+  }
+}
