@@ -1,10 +1,29 @@
 /* ── JET Sans Digital — local font faces ──────────────────────────── */
+/* Each weight is declared for both normal and italic font-style so   */
+/* iOS Safari matches the font even when fontStyle is not explicitly  */
+/* set to 'italic'. All available files are italic variants.          */
+
+@font-face {
+  font-family: 'JET Sans Digital';
+  src: url('/Font/JETSans-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 @font-face {
   font-family: 'JET Sans Digital';
   src: url('/Font/JETSans-Italic.otf') format('opentype');
   font-weight: 400;
   font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JET Sans Digital';
+  src: url('/Font/JETSans-BoldItalic.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
   font-display: swap;
 }
 
@@ -20,6 +39,14 @@
   font-family: 'JET Sans Digital';
   src: url('/Font/JETSans-ExtraBoldItalic.otf') format('opentype');
   font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JET Sans Digital';
+  src: url('/Font/JETSans-ExtraBoldItalic.otf') format('opentype');
+  font-weight: 800;
   font-style: italic;
   font-display: swap;
 }
@@ -28,7 +55,23 @@
   font-family: 'JET Sans Digital';
   src: url('/Font/JETSans-BlackItalic.otf') format('opentype');
   font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JET Sans Digital';
+  src: url('/Font/JETSans-BlackItalic.otf') format('opentype');
+  font-weight: 900;
   font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JET Sans Digital';
+  src: url('/Font/JETSans-ExtraBlackItalic.otf') format('opentype');
+  font-weight: 1000;
+  font-style: normal;
   font-display: swap;
 }
 
