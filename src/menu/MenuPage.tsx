@@ -13,6 +13,7 @@ import ConfettiAnimation from '../pie/ConfettiAnimation';
 import ArchetypeToggle from '../pie/ArchetypeToggle';
 import CelebrationBottomSheet from '../pie/CelebrationBottomSheet';
 import NudgeBottomSheet from '../pie/NudgeBottomSheet';
+import OffersPillStrip from '../pie/OffersPillStrip';
 
 // ── Figma asset URLs (expire after 7 days) ──────────────────────────
 const imgHeroImage = 'https://www.figma.com/api/mcp/asset/3e9ee9d4-55f4-4c24-b4d2-8cdbdf915150';
@@ -29,7 +30,6 @@ const imgOffer = 'https://www.figma.com/api/mcp/asset/47310c6b-4861-4715-b5c0-8f
 const imgUsers = 'https://www.figma.com/api/mcp/asset/6fb64e7a-f277-45fc-bacc-ff0453fb2a4a';
 const imgChevronLeft = 'https://www.figma.com/api/mcp/asset/11519929-fe6f-4592-a56c-be827575f1c3';
 const imgSearch = 'https://www.figma.com/api/mcp/asset/237048fa-7745-4640-af1a-2615c75caab5';
-const imgContent = 'https://www.figma.com/api/mcp/asset/aab851cf-a697-4cb6-9a81-3359aed175a2';
 const imgMoreHorizontal = 'https://www.figma.com/api/mcp/asset/292badd0-188f-4fcb-a36f-2d2badde5a24';
 
 // ── Menu data ────────────────────────────────────────────────────────
@@ -93,6 +93,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
     registerComponent('confetti', ConfettiAnimation);
     registerComponent('archetype-toggle', ArchetypeToggle);
     registerComponent('celebration-sheet', CelebrationBottomSheet);
+    registerComponent('offers-pill-strip', OffersPillStrip);
     return () => { clearRegistry(); };
   }, []);
 
@@ -100,12 +101,16 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
     setNudgeEvent(null);
     setNudgeTriggered(false);
     setShowBottomSheet(false);
-  }, [controller]);
+
+    // Initialize the controller eagerly so the offers strip is always
+    // populated with the latest personalised offers, even before the
+    // user adds anything to the basket.
+    controller.initialize(userId);
+  }, [controller, userId]);
 
   const handleAdd = useCallback((item: BasketItem) => {
     addItem(item);
     if (!nudgeTriggered) {
-      controller.initialize(userId);
       const currentTotal = basket.items.reduce(
         (sum, i) => sum + i.price * i.quantity, 0,
       ) + item.price * item.quantity;
@@ -120,7 +125,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
         }
       }
     }
-  }, [addItem, controller, userId, basket.deliveryFee, basket.items, nudgeTriggered]);
+  }, [addItem, controller, basket.deliveryFee, basket.items, nudgeTriggered]);
 
   const handleInteraction = useCallback((event: PIEInteractionEvent) => {
     if (event.componentType === 'quick-toggle' && event.action === 'toggled-on') {
@@ -299,7 +304,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
       </div>
 
       {/* ── Menu header ─────────────────────────────────────────── */}
-      <div style={{ borderBottom: `1px solid ${colorBorder}` }}>
+      <div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', padding: '8px 16px', paddingTop: 32 }}>
           <div style={{ flex: 1 }}>
             <p style={{ fontSize: 24, fontWeight: 800, lineHeight: '32px', color: colorDefault, margin: 0 }}>
@@ -343,23 +348,20 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
           </button>
         </div>
 
-        {/* Promotions banner */}
-        <div style={{ display: 'flex', gap: 8, padding: '12px 0 12px 16px', overflowX: 'auto' }}>
-          {[0, 1].map((i) => (
-            <div key={i} style={{
-              background: colorBrand05, borderRadius: 12, width: '85%', minWidth: 280, maxWidth: 319,
-              overflow: 'hidden', position: 'relative', padding: 8,
-            }}>
-              <img alt="" src={imgContent} style={{
-                position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)',
-                width: '32%', opacity: 0.6, pointerEvents: 'none',
-              }} />
-              <p style={{ fontSize: 14, fontWeight: 700, lineHeight: '20px', color: colorDefault, margin: 0, position: 'relative' }}>
-                20% off when you spend £15
-              </p>
-            </div>
-          ))}
-        </div>
+        {/* Offers pill strip */}
+        <OffersPillStrip
+          directive={{
+            componentType: 'offers-pill-strip',
+            props: {
+              offers: [
+                { id: 'offer-1', text: 'Get £10 Monthly Credit', subtitle: 'through Just Eat+ savings', variant: 'jetplus' },
+                { id: 'offer-2', text: 'Buy 1 get 1 free', subtitle: 'When you spend £15', variant: 'standard' },
+                { id: 'offer-3', text: 'Free item', subtitle: 'When you spend £15', variant: 'standard' },
+              ],
+            },
+          }}
+          onInteraction={handleInteraction}
+        />
       </div>
 
       {/* ── Menu list ───────────────────────────────────────────── */}
