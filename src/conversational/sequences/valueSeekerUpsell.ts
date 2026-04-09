@@ -3,15 +3,16 @@ import { NudgeSequence } from '../../types/index';
 /**
  * Value Seeker Subscription Upsell nudge sequence.
  *
- * A 3-step conversational flow for the "value-seeker" archetype,
+ * A 4-step conversational flow for the "value-seeker" archetype,
  * triggered when monthly accumulated delivery fees exceed £10.00 (1000 pence).
  * Uses identity-reinforcement framing with optimization and exclusivity messaging.
  *
- *   1. upsell-alert   — identity-reinforcement optimization prompt
- *   2. upsell-offer   — identity-reinforcement trial toggle on nudge tap
- *   3. upsell-confirm  — peak-end-rule confetti on trial activation
+ *   1. upsell-alert    — identity-reinforcement optimization prompt
+ *   2. upsell-offer    — identity-reinforcement trial toggle on nudge tap
+ *   3. payment-capture — payment details collection before trial activation
+ *   4. upsell-confirm  — peak-end-rule confetti on trial activation
  *
- * Requirements: 12.2, 12.4
+ * Requirements: 1.1, 1.8, 12.2, 12.4
  */
 export const valueSeekerUpsellSequence: NudgeSequence = {
   id: 'value-seeker-upsell',
@@ -47,7 +48,25 @@ export const valueSeekerUpsellSequence: NudgeSequence = {
         },
       },
     },
-    // Step 3 — Upsell Confirm (peak-end-rule celebration)
+    // Step 3 — Payment Capture (Req 1.1, 1.8)
+    {
+      stepId: 'payment-capture',
+      trigger: { type: 'payment-capture-requested' },
+      messageTemplate:
+        'Add your payment details to start your free {{trialDuration}} trial.',
+      uiDirective: {
+        componentType: 'payment-capture-sheet',
+        props: {
+          savedCards: [
+            { id: 'card-1', brand: 'mastercard', lastFour: '6374', expiryMonth: 12, expiryYear: 2027 },
+            { id: 'card-2', brand: 'amex', lastFour: '6374', expiryMonth: 6, expiryYear: 2028 },
+          ],
+          trialDuration: '{{trialDuration}}',
+          savingsAmount: '{{currentOrderSavings}}',
+        },
+      },
+    },
+    // Step 4 — Upsell Confirm (peak-end-rule celebration)
     {
       stepId: 'upsell-confirm',
       trigger: { type: 'trial-activated' },

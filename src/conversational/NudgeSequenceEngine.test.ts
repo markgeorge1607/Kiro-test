@@ -133,6 +133,39 @@ describe('NudgeSequenceEngine', () => {
       expect(event).not.toBeNull();
       expect(event!.stepId).toBe('delight-confirm');
     });
+
+    it('emits NudgeEvent when payment-capture-requested trigger matches', () => {
+      const paymentCaptureStep: NudgeStep = {
+        stepId: 'payment-capture',
+        trigger: { type: 'payment-capture-requested' },
+        messageTemplate: 'Add your payment details to start your free {{trialDuration}} trial.',
+        uiDirective: {
+          componentType: 'payment-capture-sheet',
+          props: { savedCards: [], trialDuration: '{{trialDuration}}', savingsAmount: '{{savings}}' },
+        },
+      };
+      const sequenceWithPayment: NudgeSequence = {
+        id: 'with-payment-capture',
+        steps: [paymentCaptureStep],
+      };
+      engine.load(sequenceWithPayment);
+      const event = engine.advance({ type: 'payment-capture-requested' });
+      expect(event).not.toBeNull();
+      expect(event!.stepId).toBe('payment-capture');
+    });
+
+    it('returns null when payment-capture-requested step receives a different trigger', () => {
+      const paymentCaptureStep: NudgeStep = {
+        stepId: 'payment-capture',
+        trigger: { type: 'payment-capture-requested' },
+        messageTemplate: 'Add payment details.',
+        uiDirective: { componentType: 'payment-capture-sheet', props: {} },
+      };
+      engine.load({ id: 'pc-only', steps: [paymentCaptureStep] });
+      const event = engine.advance({ type: 'trial-activated' });
+      expect(event).toBeNull();
+      expect(engine.getCurrentStep()?.stepId).toBe('payment-capture');
+    });
   });
 
   describe('advance() — NudgeEvent structure (Req 9.1, 9.3)', () => {

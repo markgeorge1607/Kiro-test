@@ -37,20 +37,20 @@ const QuickToggle: React.FC<PIEComponentProps> = ({
         .pie-quick-toggle {
           display: inline-flex;
           align-items: center;
-          gap: 12px;
-          padding: 12px 16px;
-          border-radius: 8px;
-          font-family: 'JET Sans Digital', Arial, sans-serif;
+          gap: var(--dt-spacing-c);
+          padding: var(--dt-spacing-c) var(--dt-spacing-d);
+          border-radius: var(--dt-radius-rounded-b);
+          font-family: var(--dt-font-family-primary), Arial, sans-serif;
           font-size: 14px;
           line-height: 1.4;
-          color: #242e30;
-          background: #f5f5f5;
+          color: var(--dt-color-content-default);
+          background: var(--dt-color-background-subtle);
         }
 
         .pie-quick-toggle__content {
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: var(--dt-spacing-a);
         }
 
         .pie-quick-toggle__label {
@@ -59,24 +59,24 @@ const QuickToggle: React.FC<PIEComponentProps> = ({
 
         .pie-quick-toggle__detail {
           font-size: 12px;
-          color: #595959;
+          color: var(--dt-color-content-subdued);
         }
 
         .pie-quick-toggle__switch {
           position: relative;
           width: 44px;
           height: 24px;
-          border-radius: 12px;
+          border-radius: var(--dt-radius-rounded-e);
           border: none;
           cursor: pointer;
           padding: 0;
-          background-color: #c4c4c4;
-          transition: background-color 0.2s ease;
+          background-color: var(--dt-color-border-default);
+          transition: background-color var(--dt-motion-timing-200) var(--dt-motion-easing-out);
           flex-shrink: 0;
         }
 
         .pie-quick-toggle__switch--active {
-          background-color: #e36002;
+          background-color: var(--dt-color-interactive-brand);
         }
 
         .pie-quick-toggle__switch::after {
@@ -87,8 +87,8 @@ const QuickToggle: React.FC<PIEComponentProps> = ({
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          background: #ffffff;
-          transition: transform 0.2s ease;
+          background: var(--dt-color-container-default);
+          transition: transform var(--dt-motion-timing-200) var(--dt-motion-easing-out);
         }
 
         .pie-quick-toggle__switch--active::after {

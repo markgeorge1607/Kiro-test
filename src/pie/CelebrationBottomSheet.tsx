@@ -14,6 +14,8 @@ const colorSubdued = 'rgba(0,0,0,0.64)';
 const colorContentDefault = 'rgba(0,0,0,0.76)';
 const tealBg = '#E7F4F6';
 
+const bodyFont = "'Takeaway Sans', 'JET Sans Digital', Arial, sans-serif";
+
 /**
  * CelebrationBottomSheet PIE component.
  *
@@ -197,7 +199,7 @@ const CelebrationBottomSheet: React.FC<PIEComponentProps> = ({ directive, onInte
                 data-testid="celebration-title"
                 style={{
                   margin: 0, fontSize: 32, lineHeight: '36px',
-                  fontWeight: 1000, fontStyle: 'italic',
+                  fontWeight: 1000,
                   color: colorDefault, fontFamily: font,
                 }}
               >
@@ -225,7 +227,7 @@ const CelebrationBottomSheet: React.FC<PIEComponentProps> = ({ directive, onInte
             style={{
               margin: 0, fontSize: 16, fontWeight: 400,
               lineHeight: '24px', color: colorDefault,
-              fontFamily: font,
+              fontFamily: bodyFont,
             }}
           >
             {bodyMessage}
@@ -255,14 +257,14 @@ const CelebrationBottomSheet: React.FC<PIEComponentProps> = ({ directive, onInte
               <p style={{
                 margin: 0, fontSize: 16, fontWeight: 700,
                 lineHeight: '24px', color: colorContentDefault,
-                fontFamily: font,
+                fontFamily: bodyFont,
               }}>
                 JET+ trial active
               </p>
               <p style={{
-                margin: 0, fontSize: 14, fontWeight: 400,
-                lineHeight: '20px', color: colorSubdued,
-                fontFamily: font,
+                margin: 0, fontSize: 16, fontWeight: 400,
+                lineHeight: '24px', color: colorSubdued,
+                fontFamily: bodyFont,
               }}>
                 Delivery fee removed
               </p>

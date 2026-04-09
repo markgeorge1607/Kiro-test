@@ -123,6 +123,7 @@ export class NudgeSequenceEngine {
    * - checkout-reached: provided fee > step's feeGreaterThan threshold
    * - nudge-tapped: stepId matches
    * - trial-activated: always matches (no extra fields)
+   * - payment-capture-requested: always matches (no extra fields)
    */
   private triggersMatch(
     stepTrigger: TriggerCondition,
@@ -146,6 +147,8 @@ export class NudgeSequenceEngine {
         return p.stepId === stepTrigger.stepId;
       }
       case 'trial-activated':
+        return true;
+      case 'payment-capture-requested':
         return true;
       case 'subscription-upsell': {
         const p = provided as { type: 'subscription-upsell'; monthlyFeesExceed: number };

@@ -3,12 +3,13 @@ import { NudgeSequence } from '../../types/index';
 /**
  * Squeezed Saver checkout nudge sequence.
  *
- * A 3-step conversational flow for the "squeezed-saver" archetype:
- *   1. savings-alert  — loss-aversion fee alert at checkout
- *   2. trial-offer    — loss-aversion trial toggle on nudge tap
- *   3. delight-confirm — peak-end-rule confetti on trial activation
+ * A 4-step conversational flow for the "squeezed-saver" archetype:
+ *   1. savings-alert   — loss-aversion fee alert at checkout
+ *   2. trial-offer     — loss-aversion trial toggle on nudge tap
+ *   3. payment-capture — payment details collection before trial activation
+ *   4. delight-confirm — peak-end-rule confetti on trial activation
  *
- * Requirements: 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.1, 6.2
+ * Requirements: 1.1, 1.8, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.1, 6.2
  */
 export const squeezedSaverCheckoutSequence: NudgeSequence = {
   id: 'squeezed-saver-checkout',
@@ -42,7 +43,25 @@ export const squeezedSaverCheckoutSequence: NudgeSequence = {
         },
       },
     },
-    // Step 3 — Delight Confirm (Req 6.1, 6.2)
+    // Step 3 — Payment Capture (Req 1.1, 1.8)
+    {
+      stepId: 'payment-capture',
+      trigger: { type: 'payment-capture-requested' },
+      messageTemplate:
+        'Add your payment details to start your free {{trialDuration}} trial.',
+      uiDirective: {
+        componentType: 'payment-capture-sheet',
+        props: {
+          savedCards: [
+            { id: 'card-1', brand: 'mastercard', lastFour: '6374', expiryMonth: 12, expiryYear: 2027 },
+            { id: 'card-2', brand: 'amex', lastFour: '6374', expiryMonth: 6, expiryYear: 2028 },
+          ],
+          trialDuration: '{{trialDuration}}',
+          savingsAmount: '{{currentOrderSavings}}',
+        },
+      },
+    },
+    // Step 4 — Delight Confirm (Req 6.1, 6.2)
     {
       stepId: 'delight-confirm',
       trigger: { type: 'trial-activated' },

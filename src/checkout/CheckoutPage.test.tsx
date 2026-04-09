@@ -140,7 +140,7 @@ describe('CheckoutPage', () => {
     expect(screen.getByTestId('quick-toggle')).toBeInTheDocument();
   });
 
-  it('activates trial and zeroes delivery fee on quick-toggle activation', () => {
+  it('advances to payment-capture on quick-toggle activation', () => {
     const ctrl = createController({
       membershipStatus: 'non-member',
       deliveryFee: 399,
@@ -153,14 +153,14 @@ describe('CheckoutPage', () => {
     // Step 1 → Step 2: tap savings badge
     fireEvent.click(screen.getByLabelText('Savings badge'));
 
-    // Step 2 → Step 3: toggle on
+    // Step 2 → Step 3: toggle on → payment-capture
     fireEvent.click(screen.getByRole('switch'));
 
-    // Trial should be active, delivery fee zeroed (Req 6.3)
+    // Trial should be active (activateTrial called on toggle-on), delivery fee zeroed (Req 6.3)
     expect(screen.getByTestId('trial-status')).toHaveTextContent('Free trial active');
     expect(screen.getByTestId('delivery-fee')).toHaveTextContent('£0.00');
 
-    // The delight-confirm nudge message should be displayed (Req 6.1)
+    // The payment-capture nudge message should be displayed (Req 1.1)
     expect(screen.getByTestId('nudge-message')).toBeInTheDocument();
   });
 

@@ -3,12 +3,13 @@ import { NudgeSequence } from '../../types/index';
 /**
  * Value Seeker checkout nudge sequence.
  *
- * A 3-step conversational flow for the "value-seeker" archetype:
- *   1. savings-alert  — identity-reinforcement savings alert at checkout
- *   2. trial-offer    — identity-reinforcement trial toggle on nudge tap
- *   3. delight-confirm — peak-end-rule confetti on trial activation
+ * A 4-step conversational flow for the "value-seeker" archetype:
+ *   1. savings-alert   — identity-reinforcement savings alert at checkout
+ *   2. trial-offer     — identity-reinforcement trial toggle on nudge tap
+ *   3. payment-capture — payment details collection before trial activation
+ *   4. delight-confirm — peak-end-rule confetti on trial activation
  *
- * Requirements: 10.3
+ * Requirements: 1.1, 1.8, 10.3
  */
 export const valueSeekerCheckoutSequence: NudgeSequence = {
   id: 'value-seeker-checkout',
@@ -44,7 +45,25 @@ export const valueSeekerCheckoutSequence: NudgeSequence = {
         },
       },
     },
-    // Step 3 — Delight Confirm (peak-end-rule)
+    // Step 3 — Payment Capture (Req 1.1, 1.8)
+    {
+      stepId: 'payment-capture',
+      trigger: { type: 'payment-capture-requested' },
+      messageTemplate:
+        'Add your payment details to start your free {{trialDuration}} trial.',
+      uiDirective: {
+        componentType: 'payment-capture-sheet',
+        props: {
+          savedCards: [
+            { id: 'card-1', brand: 'mastercard', lastFour: '6374', expiryMonth: 12, expiryYear: 2027 },
+            { id: 'card-2', brand: 'amex', lastFour: '6374', expiryMonth: 6, expiryYear: 2028 },
+          ],
+          trialDuration: '{{trialDuration}}',
+          savingsAmount: '{{currentOrderSavings}}',
+        },
+      },
+    },
+    // Step 4 — Delight Confirm (peak-end-rule)
     {
       stepId: 'delight-confirm',
       trigger: { type: 'trial-activated' },

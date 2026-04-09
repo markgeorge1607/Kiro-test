@@ -225,7 +225,9 @@ export class CheckoutNudgeController {
    *
    * Mappings:
    * - savings-badge tapped → nudge-tapped on savings-alert
-   * - quick-toggle toggled-on → trial-activated
+   * - quick-toggle toggled-on → payment-capture-requested
+   * - payment-capture-sheet payment-confirmed → trial-activated
+   * - payment-capture-sheet dismissed → null (no advance)
    */
   handleInteraction(event: PIEInteractionEvent): NudgeEvent | null {
     if (!this.isMovMet()) return null;
@@ -283,7 +285,16 @@ export class CheckoutNudgeController {
     }
 
     if (event.componentType === 'quick-toggle' && event.action === 'toggled-on') {
+      return { type: 'payment-capture-requested' };
+    }
+
+    if (event.componentType === 'payment-capture-sheet' && event.action === 'payment-confirmed') {
       return { type: 'trial-activated' };
+    }
+
+    // payment-capture-sheet dismissed — stay on payment-capture step, do not advance
+    if (event.componentType === 'payment-capture-sheet' && event.action === 'dismissed') {
+      return null;
     }
 
     // celebration-sheet dismissed — sequence is already complete, no further trigger

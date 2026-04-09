@@ -74,12 +74,12 @@ const ConfettiAnimation: React.FC<PIEComponentProps> = ({ directive }) => {
           display: flex;
           justify-content: center;
           align-items: flex-start;
-          gap: 4px;
+          gap: var(--dt-spacing-a);
         }
 
         .pie-confetti__particle {
-          width: 8px;
-          height: 8px;
+          width: var(--dt-spacing-b);
+          height: var(--dt-spacing-b);
           border-radius: 2px;
           animation: pie-confetti-fall linear forwards;
         }
@@ -115,7 +115,7 @@ const ConfettiAnimation: React.FC<PIEComponentProps> = ({ directive }) => {
 };
 
 const PARTICLE_COLOURS = [
-  '#e36002', // product orange
+  '#f36805', // product orange (--dt-color-orange)
   '#f5a623',
   '#4caf50',
   '#2196f3',

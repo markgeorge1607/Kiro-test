@@ -110,13 +110,28 @@ describe('CheckoutNudgeController', () => {
       expect(event!.uiDirective.componentType).toBe('quick-toggle');
     });
 
-    it('maps quick-toggle toggled-on to trial-activated trigger', () => {
+    it('maps quick-toggle toggled-on to payment-capture-requested trigger', () => {
       // Advance past step 2 first
       ctrl.handleInteraction({ componentType: 'savings-badge', action: 'tapped' });
 
       const event = ctrl.handleInteraction({
         componentType: 'quick-toggle',
         action: 'toggled-on',
+      });
+
+      expect(event).not.toBeNull();
+      expect(event!.stepId).toBe('payment-capture');
+      expect(event!.uiDirective.componentType).toBe('payment-capture-sheet');
+    });
+
+    it('maps payment-capture-sheet payment-confirmed to trial-activated trigger', () => {
+      // Advance to payment-capture step
+      ctrl.handleInteraction({ componentType: 'savings-badge', action: 'tapped' });
+      ctrl.handleInteraction({ componentType: 'quick-toggle', action: 'toggled-on' });
+
+      const event = ctrl.handleInteraction({
+        componentType: 'payment-capture-sheet',
+        action: 'payment-confirmed',
       });
 
       expect(event).not.toBeNull();
@@ -208,7 +223,7 @@ describe('CheckoutNudgeController', () => {
       expect(ctrl.isComplete()).toBe(false);
     });
 
-    it('returns true after all 3 steps complete', () => {
+    it('returns true after all 4 steps complete', () => {
       const ctrl = createController({
         membershipStatus: 'non-member',
         deliveryFee: 399,
@@ -220,12 +235,13 @@ describe('CheckoutNudgeController', () => {
       ctrl.handleItemAdded(399);
       ctrl.handleInteraction({ componentType: 'savings-badge', action: 'tapped' });
       ctrl.handleInteraction({ componentType: 'quick-toggle', action: 'toggled-on' });
+      ctrl.handleInteraction({ componentType: 'payment-capture-sheet', action: 'payment-confirmed' });
 
       expect(ctrl.isComplete()).toBe(true);
     });
   });
 
-  describe('full 3-step flow', () => {
+  describe('full 4-step flow', () => {
     it('completes the squeezed saver checkout sequence end-to-end', () => {
       const ctrl = createController({
         membershipStatus: 'non-member',
@@ -256,15 +272,24 @@ describe('CheckoutNudgeController', () => {
       expect(step2!.stepId).toBe('trial-offer');
       expect(step2!.uiDirective.componentType).toBe('quick-toggle');
 
-      // Step 3: trial activated
+      // Step 3: quick-toggle toggled-on → payment-capture
       const step3 = ctrl.handleInteraction({
         componentType: 'quick-toggle',
         action: 'toggled-on',
       });
       expect(step3).not.toBeNull();
-      expect(step3!.stepId).toBe('delight-confirm');
-      expect(step3!.uiDirective.componentType).toBe('celebration-sheet');
-      expect(step3!.metadata.strategyName).toBe('peak-end-rule');
+      expect(step3!.stepId).toBe('payment-capture');
+      expect(step3!.uiDirective.componentType).toBe('payment-capture-sheet');
+
+      // Step 4: payment confirmed → delight-confirm
+      const step4 = ctrl.handleInteraction({
+        componentType: 'payment-capture-sheet',
+        action: 'payment-confirmed',
+      });
+      expect(step4).not.toBeNull();
+      expect(step4!.stepId).toBe('delight-confirm');
+      expect(step4!.uiDirective.componentType).toBe('celebration-sheet');
+      expect(step4!.metadata.strategyName).toBe('peak-end-rule');
 
       expect(ctrl.isComplete()).toBe(true);
     });
@@ -289,7 +314,7 @@ describe('CheckoutNudgeController', () => {
       });
     });
 
-    it('completes the 3-step value seeker checkout flow', () => {
+    it('completes the 4-step value seeker checkout flow', () => {
       const ctrl = createController({
         membershipStatus: 'non-member',
         deliveryFee: 350,
@@ -315,15 +340,24 @@ describe('CheckoutNudgeController', () => {
       expect(step2!.stepId).toBe('trial-offer');
       expect(step2!.uiDirective.componentType).toBe('quick-toggle');
 
-      // Step 3: trial-activated → delight-confirm
+      // Step 3: quick-toggle toggled-on → payment-capture
       const step3 = ctrl.handleInteraction({
         componentType: 'quick-toggle',
         action: 'toggled-on',
       });
       expect(step3).not.toBeNull();
-      expect(step3!.stepId).toBe('delight-confirm');
-      expect(step3!.uiDirective.componentType).toBe('celebration-sheet');
-      expect(step3!.metadata.strategyName).toBe('peak-end-rule');
+      expect(step3!.stepId).toBe('payment-capture');
+      expect(step3!.uiDirective.componentType).toBe('payment-capture-sheet');
+
+      // Step 4: payment confirmed → delight-confirm
+      const step4 = ctrl.handleInteraction({
+        componentType: 'payment-capture-sheet',
+        action: 'payment-confirmed',
+      });
+      expect(step4).not.toBeNull();
+      expect(step4!.stepId).toBe('delight-confirm');
+      expect(step4!.uiDirective.componentType).toBe('celebration-sheet');
+      expect(step4!.metadata.strategyName).toBe('peak-end-rule');
 
       expect(ctrl.isComplete()).toBe(true);
     });
@@ -455,7 +489,7 @@ describe('CheckoutNudgeController', () => {
   // ── Squeezed Saver upsell flow (Req 12.1) ────────────────────────
 
   describe('Squeezed Saver upsell flow', () => {
-    it('completes the full 3-step upsell flow with loss-aversion framing', () => {
+    it('completes the full 4-step upsell flow with loss-aversion framing', () => {
       const ctrl = createController({
         membershipStatus: 'non-member',
         deliveryFee: 399,
@@ -482,15 +516,24 @@ describe('CheckoutNudgeController', () => {
       expect(step2!.stepId).toBe('upsell-offer');
       expect(step2!.uiDirective.componentType).toBe('quick-toggle');
 
-      // Step 3: trial-activated → upsell-confirm
+      // Step 3: quick-toggle toggled-on → payment-capture
       const step3 = ctrl.handleInteraction({
         componentType: 'quick-toggle',
         action: 'toggled-on',
       });
       expect(step3).not.toBeNull();
-      expect(step3!.stepId).toBe('upsell-confirm');
-      expect(step3!.uiDirective.componentType).toBe('celebration-sheet');
-      expect(step3!.metadata.strategyName).toBe('peak-end-rule');
+      expect(step3!.stepId).toBe('payment-capture');
+      expect(step3!.uiDirective.componentType).toBe('payment-capture-sheet');
+
+      // Step 4: payment confirmed → upsell-confirm
+      const step4 = ctrl.handleInteraction({
+        componentType: 'payment-capture-sheet',
+        action: 'payment-confirmed',
+      });
+      expect(step4).not.toBeNull();
+      expect(step4!.stepId).toBe('upsell-confirm');
+      expect(step4!.uiDirective.componentType).toBe('celebration-sheet');
+      expect(step4!.metadata.strategyName).toBe('peak-end-rule');
 
       expect(ctrl.isComplete()).toBe(true);
     });
@@ -499,7 +542,7 @@ describe('CheckoutNudgeController', () => {
   // ── Value Seeker upsell flow (Req 12.2) ───────────────────────────
 
   describe('Value Seeker upsell flow', () => {
-    it('completes the full 3-step upsell flow with identity-reinforcement framing', () => {
+    it('completes the full 4-step upsell flow with identity-reinforcement framing', () => {
       const ctrl = createController({
         membershipStatus: 'non-member',
         deliveryFee: 299,
@@ -526,15 +569,24 @@ describe('CheckoutNudgeController', () => {
       expect(step2!.stepId).toBe('upsell-offer');
       expect(step2!.uiDirective.componentType).toBe('quick-toggle');
 
-      // Step 3: trial-activated → upsell-confirm
+      // Step 3: quick-toggle toggled-on → payment-capture
       const step3 = ctrl.handleInteraction({
         componentType: 'quick-toggle',
         action: 'toggled-on',
       });
       expect(step3).not.toBeNull();
-      expect(step3!.stepId).toBe('upsell-confirm');
-      expect(step3!.uiDirective.componentType).toBe('celebration-sheet');
-      expect(step3!.metadata.strategyName).toBe('peak-end-rule');
+      expect(step3!.stepId).toBe('payment-capture');
+      expect(step3!.uiDirective.componentType).toBe('payment-capture-sheet');
+
+      // Step 4: payment confirmed → upsell-confirm
+      const step4 = ctrl.handleInteraction({
+        componentType: 'payment-capture-sheet',
+        action: 'payment-confirmed',
+      });
+      expect(step4).not.toBeNull();
+      expect(step4!.stepId).toBe('upsell-confirm');
+      expect(step4!.uiDirective.componentType).toBe('celebration-sheet');
+      expect(step4!.metadata.strategyName).toBe('peak-end-rule');
 
       expect(ctrl.isComplete()).toBe(true);
     });

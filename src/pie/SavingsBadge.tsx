@@ -42,11 +42,11 @@ const SavingsBadge: React.FC<PIEComponentProps> = ({
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          padding: 8px 16px;
-          border-radius: 8px;
-          background-color: #e36002;
-          color: #ffffff;
-          font-family: 'JET Sans Digital', Arial, sans-serif;
+          padding: var(--dt-spacing-b) var(--dt-spacing-d);
+          border-radius: var(--dt-radius-rounded-b);
+          background-color: var(--dt-color-interactive-brand);
+          color: var(--dt-color-content-light);
+          font-family: var(--dt-font-family-primary), Arial, sans-serif;
           font-size: 14px;
           font-weight: 600;
           cursor: pointer;

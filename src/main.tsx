@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import '@justeattakeaway/pie-css/dist/index.css';
 import App from './App';
 import './fonts.css';
 

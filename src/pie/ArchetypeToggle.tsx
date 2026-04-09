@@ -37,40 +37,41 @@ const ArchetypeToggle: React.FC<PIEComponentProps> = ({
         .pie-archetype-toggle {
           display: inline-flex;
           align-items: center;
-          gap: 8px;
-          padding: 4px;
-          border-radius: 8px;
-          background: #f5f5f5;
-          font-family: 'JET Sans Digital', Arial, sans-serif;
+          gap: var(--dt-spacing-b);
+          padding: var(--dt-spacing-a);
+          border-radius: var(--dt-radius-rounded-b);
+          background: var(--dt-color-background-subtle);
+          font-family: var(--dt-font-family-primary), Arial, sans-serif;
           font-size: 14px;
           line-height: 1.4;
         }
 
         .pie-archetype-toggle__btn {
-          padding: 8px 16px;
+          padding: var(--dt-spacing-b) var(--dt-spacing-d);
           border: none;
-          border-radius: 4px;
+          border-radius: var(--dt-radius-rounded-a);
           cursor: pointer;
           font-family: inherit;
           font-size: inherit;
           font-weight: 600;
           line-height: 1.4;
-          color: #242e30;
+          color: var(--dt-color-content-default);
           background: transparent;
-          transition: background-color 0.2s ease, color 0.2s ease;
+          transition: background-color var(--dt-motion-timing-200) var(--dt-motion-easing-out),
+                      color var(--dt-motion-timing-200) var(--dt-motion-easing-out);
         }
 
         .pie-archetype-toggle__btn:hover {
-          background: #e8e8e8;
+          background: var(--dt-color-container-strong);
         }
 
         .pie-archetype-toggle__btn--active {
-          background-color: #e36002;
-          color: #ffffff;
+          background-color: var(--dt-color-interactive-brand);
+          color: var(--dt-color-content-light);
         }
 
         .pie-archetype-toggle__btn--active:hover {
-          background-color: #e36002;
+          background-color: var(--dt-color-interactive-brand);
         }
 
         @media (prefers-reduced-motion: reduce) {

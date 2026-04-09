@@ -31,6 +31,7 @@ export type TriggerCondition =
   | { type: 'checkout-reached'; feeGreaterThan: number }
   | { type: 'nudge-tapped'; stepId: string }
   | { type: 'trial-activated' }
+  | { type: 'payment-capture-requested' }
   | { type: 'subscription-upsell'; monthlyFeesExceed: number };
 
 // ── UI Directive ─────────────────────────────────────────────────────
@@ -97,3 +98,25 @@ export interface PIEComponentProps {
   directive: UIDirective;
   onInteraction?: (event: PIEInteractionEvent) => void;
 }
+
+// ── Payment ──────────────────────────────────────────────────────────
+
+export interface SavedCard {
+  id: string;
+  brand: 'visa' | 'mastercard' | 'amex';
+  lastFour: string;
+  expiryMonth: number;  // 1-12
+  expiryYear: number;   // 4-digit year
+}
+
+export interface CardEntryData {
+  cardNumber: string;
+  expiryMonth: number;
+  expiryYear: number;
+  cvv: string;
+  cardholderName: string;
+}
+
+export type PaymentMethod =
+  | { type: 'saved-card'; cardId: string }
+  | { type: 'new-card'; card: CardEntryData };

@@ -14,6 +14,7 @@ import ArchetypeToggle from '../pie/ArchetypeToggle';
 import CelebrationBottomSheet from '../pie/CelebrationBottomSheet';
 import NudgeBottomSheet from '../pie/NudgeBottomSheet';
 import OffersPillStrip from '../pie/OffersPillStrip';
+import PaymentCaptureSheet from '../pie/PaymentCaptureSheet';
 
 // ── Figma asset URLs (expire after 7 days) ──────────────────────────
 const imgHeroImage = 'https://www.figma.com/api/mcp/asset/3e9ee9d4-55f4-4c24-b4d2-8cdbdf915150';
@@ -64,8 +65,16 @@ const MENU_ITEMS: MenuItem[] = [
   { id: 'sushi-6', name: 'Teriyaki Chicken', price: 1199, quantity: 1, image: imgDishImage1 },
 ];
 
+// ── Offers data ─────────────────────────────────────────────────────
+const OFFERS = [
+  { id: 'offer-1', text: 'Get £10 Monthly Credit', subtitle: 'through Just Eat+ savings', variant: 'jetplus' as const },
+  { id: 'offer-2', text: 'Buy 1 get 1 free', subtitle: 'When you spend £15', variant: 'standard' as const },
+  { id: 'offer-3', text: 'Free item', subtitle: 'When you spend £15', variant: 'standard' as const },
+];
+
 // ── Shared style constants (PIE Design System) ──────────────────────
 const font = "'JET Sans Digital', Arial, sans-serif";
+const bodyFont = "'Takeaway Sans', 'JET Sans Digital', Arial, sans-serif";
 const colorDefault = '#242e30';
 const colorSubdued = '#3c4c4f';
 const colorBorder = '#dbd9d7';
@@ -86,6 +95,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
   const [nudgeEvent, setNudgeEvent] = useState<NudgeEvent | null>(null);
   const [nudgeTriggered, setNudgeTriggered] = useState(false);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
+  const [showPaymentCapture, setShowPaymentCapture] = useState(false);
 
   useEffect(() => {
     registerComponent('savings-badge', SavingsBadge);
@@ -94,6 +104,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
     registerComponent('archetype-toggle', ArchetypeToggle);
     registerComponent('celebration-sheet', CelebrationBottomSheet);
     registerComponent('offers-pill-strip', OffersPillStrip);
+    registerComponent('payment-capture-sheet', PaymentCaptureSheet);
     return () => { clearRegistry(); };
   }, []);
 
@@ -101,6 +112,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
     setNudgeEvent(null);
     setNudgeTriggered(false);
     setShowBottomSheet(false);
+    setShowPaymentCapture(false);
 
     // Initialize the controller eagerly so the offers strip is always
     // populated with the latest personalised offers, even before the
@@ -128,6 +140,32 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
   }, [addItem, controller, basket.deliveryFee, basket.items, nudgeTriggered]);
 
   const handleInteraction = useCallback((event: PIEInteractionEvent) => {
+    // ── Offers pill strip: JET+ offer tapped → open NudgeBottomSheet ──
+    if (event.componentType === 'offers-pill-strip' && event.action === 'offer-tapped') {
+      const offerId = event.payload?.offerId as string;
+      const offer = OFFERS.find(o => o.id === offerId);
+      if (offer?.variant === 'jetplus') {
+        setShowBottomSheet(true);
+      }
+      return;
+    }
+
+    // ── Payment capture: confirmed ────────────────────────────────
+    if (event.componentType === 'payment-capture-sheet' && event.action === 'payment-confirmed') {
+      setShowPaymentCapture(false);
+      const nextEvent = controller.handleInteraction(event);
+      activateTrial();
+      setNudgeEvent(nextEvent);
+      return;
+    }
+
+    // ── Payment capture: dismissed ────────────────────────────────
+    if (event.componentType === 'payment-capture-sheet' && event.action === 'dismissed') {
+      setShowPaymentCapture(false);
+      setShowBottomSheet(true);
+      return;
+    }
+
     if (event.componentType === 'quick-toggle' && event.action === 'toggled-on') {
       activateTrial();
     }
@@ -136,6 +174,15 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
       return;
     }
     const nextEvent = controller.handleInteraction(event);
+
+    // ── If the next event is a payment-capture-sheet, show it ────
+    if (nextEvent && nextEvent.uiDirective.componentType === 'payment-capture-sheet') {
+      setNudgeEvent(nextEvent);
+      setShowPaymentCapture(true);
+      setShowBottomSheet(false);
+      return;
+    }
+
     setNudgeEvent(nextEvent);
   }, [controller, activateTrial]);
 
@@ -157,7 +204,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
   const bottomSheetHeadline = isSam ? 'Wake up, Sam!' : 'Ready to optimise, Alex?';
 
   const bottomSheetBody = isSam ? (
-    <p style={{ margin: 0 }}>
+    <p style={{ margin: 0, fontFamily: bodyFont }}>
       {'Stop paying the \'convenience tax.\' You\'ve spent '}
       <span style={{ fontWeight: 700 }}>£15</span>
       {' on delivery this month—save '}
@@ -167,7 +214,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
       {'.'}
     </p>
   ) : (
-    <p style={{ margin: 0 }}>
+    <p style={{ margin: 0, fontFamily: bodyFont }}>
       {'Most '}
       <span style={{ fontWeight: 700 }}>JET+</span>
       {' members save over '}
@@ -177,7 +224,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
   );
 
   const bottomSheetBanner = isSam ? (
-    <p style={{ margin: 0 }}>
+    <p style={{ margin: 0, fontFamily: bodyFont }}>
       {'Let\'s eliminate that fee right now. Start your free '}
       <span style={{ fontWeight: 700 }}>14-day JET+ trial</span>
       {' and '}
@@ -185,7 +232,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
       {' on this order.'}
     </p>
   ) : (
-    <p style={{ margin: 0 }}>
+    <p style={{ margin: 0, fontFamily: bodyFont }}>
       {'Start your '}
       <span style={{ fontWeight: 700 }}>14-day JET+</span>
       {' '}
@@ -196,23 +243,27 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
   );
 
   const handleBottomSheetTrial = useCallback(() => {
-    // Activate the trial via the existing nudge flow
-    activateTrial();
     setShowBottomSheet(false);
-    // Advance the nudge engine through the interaction flow
+    // Advance the nudge engine through the interaction flow to reach payment-capture
     if (nudgeEvent) {
       // Simulate savings-badge tap → trial-offer step
-      const tapEvent = controller.handleInteraction({
+      controller.handleInteraction({
         componentType: 'savings-badge', action: 'tapped',
       });
-      if (tapEvent) setNudgeEvent(tapEvent);
-      // Simulate quick-toggle activation → delight-confirm step
-      const trialEvent = controller.handleInteraction({
+      // Simulate quick-toggle toggled-on → payment-capture-requested step
+      // The controller now maps this to payment-capture-requested (not trial-activated),
+      // so the engine advances to the payment-capture step and emits a payment-capture-sheet directive.
+      const paymentCaptureEvent = controller.handleInteraction({
         componentType: 'quick-toggle', action: 'toggled-on',
       });
-      setNudgeEvent(trialEvent);
+      if (paymentCaptureEvent && paymentCaptureEvent.uiDirective.componentType === 'payment-capture-sheet') {
+        setNudgeEvent(paymentCaptureEvent);
+        setShowPaymentCapture(true);
+      } else {
+        setNudgeEvent(paymentCaptureEvent);
+      }
     }
-  }, [activateTrial, controller, nudgeEvent]);
+  }, [controller, nudgeEvent]);
 
   return (
     <div style={{ fontFamily: font, background: 'white', overflow: 'hidden', position: 'relative', width: '100%', paddingTop: 10 }}>
@@ -261,7 +312,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
                   >
                     <div style={{ textAlign: 'center', fontSize: 12, lineHeight: '14px', color: isActive ? colorDefault : '#5d7074' }}>
                       <div style={{ fontWeight: 700 }}>{label}</div>
-                      <div style={{ fontWeight: 400 }}>{name === 'squeezed-saver' ? 'Saver' : 'Seeker'}</div>
+                      <div style={{ fontWeight: 400, fontFamily: bodyFont }}>{name === 'squeezed-saver' ? 'Saver' : 'Seeker'}</div>
                     </div>
                   </button>
                 );
@@ -290,7 +341,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
             cursor: 'pointer', minWidth: 48,
           }}>
             <img alt="" src={imgUsers} style={{ width: 16, height: 16 }} />
-            <span style={{ fontWeight: 700, fontSize: 14, lineHeight: '20px', color: colorDefault }}>Group order</span>
+            <span style={{ fontWeight: 700, fontSize: 14, lineHeight: '20px', color: colorDefault, fontFamily: bodyFont }}>Group order</span>
           </button>
         </div>
         {/* Restaurant logo */}
@@ -316,12 +367,12 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
                 <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                   <img alt="Rating" src={imgStarFilled} style={{ width: 20, height: 20 }} />
                   <span style={{ fontSize: 14, lineHeight: '20px', color: colorDefault }}>
-                    <span style={{ fontWeight: 700 }}>4.9 </span>
-                    <span style={{ fontWeight: 400 }}>(213)</span>
+                    <span style={{ fontWeight: 700, fontFamily: bodyFont }}>4.9 </span>
+                    <span style={{ fontWeight: 400, fontFamily: bodyFont }}>(213)</span>
                   </span>
                 </div>
                 <img alt="" src={imgSeparator} style={{ width: 2, height: 2 }} />
-                <span style={{ fontSize: 14, lineHeight: '20px', color: colorDefault, fontWeight: 400 }}>
+                <span style={{ fontSize: 14, lineHeight: '20px', color: colorDefault, fontWeight: 400, fontFamily: bodyFont }}>
                   Min order. £{(1500 / 100).toFixed(2)}
                 </span>
               </div>
@@ -333,7 +384,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
                 }}>
                   <img alt="" src={imgBike} style={{ width: 14, height: 14 }} />
                 </div>
-                <span style={{ fontSize: 14, lineHeight: '20px', color: colorDefault, fontWeight: 400 }}>
+                <span style={{ fontSize: 14, lineHeight: '20px', color: colorDefault, fontWeight: 400, fontFamily: bodyFont }}>
                   Free delivery £{(basket.deliveryFee / 100).toFixed(2)}
                 </span>
               </div>
@@ -353,11 +404,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
           directive={{
             componentType: 'offers-pill-strip',
             props: {
-              offers: [
-                { id: 'offer-1', text: 'Get £10 Monthly Credit', subtitle: 'through Just Eat+ savings', variant: 'jetplus' },
-                { id: 'offer-2', text: 'Buy 1 get 1 free', subtitle: 'When you spend £15', variant: 'standard' },
-                { id: 'offer-3', text: 'Free item', subtitle: 'When you spend £15', variant: 'standard' },
-              ],
+              offers: OFFERS,
             },
           }}
           onInteraction={handleInteraction}
@@ -383,14 +430,14 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
                 <div style={{ display: 'flex', gap: 8, paddingLeft: 16, paddingRight: 8 }}>
                   {/* Copy */}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 16, fontWeight: 800, lineHeight: '24px', color: colorDefault, margin: 0 }}>
+                    <p style={{ fontSize: 16, fontWeight: 700, lineHeight: '24px', color: colorDefault, margin: 0, fontFamily: bodyFont }}>
                       {item.name}
                     </p>
-                    <p style={{ fontSize: 16, fontWeight: 700, lineHeight: '24px', color: colorDefault, margin: 0 }}>
+                    <p style={{ fontSize: 16, fontWeight: 700, lineHeight: '24px', color: colorDefault, margin: 0, fontFamily: bodyFont }}>
                       £{(item.price / 100).toFixed(2)}
                     </p>
                     {item.description && (
-                      <p style={{ fontSize: 14, fontWeight: 400, lineHeight: '20px', color: colorSubdued, margin: 0, paddingTop: 4 }}>
+                      <p style={{ fontSize: 14, fontWeight: 400, lineHeight: '20px', color: colorSubdued, margin: 0, paddingTop: 4, fontFamily: bodyFont }}>
                         {item.description}
                       </p>
                     )}
@@ -426,7 +473,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
 
                 {/* Calories */}
                 {item.calories && (
-                  <div style={{ padding: '4px 16px 0', fontSize: 12, fontWeight: 400, lineHeight: '16px', color: colorSubdued }}>
+                  <div style={{ padding: '4px 16px 0', fontSize: 12, fontWeight: 400, lineHeight: '16px', color: colorSubdued, fontFamily: bodyFont }}>
                     {item.calories}
                   </div>
                 )}
@@ -455,7 +502,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
                     }}>
                       <img alt="" src={imgOffer} style={{ width: 14, height: 14 }} />
                     </div>
-                    <span style={{ fontSize: 14, fontWeight: 700, lineHeight: '20px', color: colorDefault }}>
+                    <span style={{ fontSize: 14, fontWeight: 700, lineHeight: '20px', color: colorDefault, fontFamily: bodyFont }}>
                       {item.offer}
                     </span>
                   </div>
@@ -480,8 +527,16 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
       )}
 
       {/* ── Delight confirm (celebration sheet after trial activation) ──── */}
-      {nudgeEvent && !showBottomSheet && nudgeEvent.uiDirective.componentType === 'celebration-sheet' && (
+      {nudgeEvent && !showBottomSheet && !showPaymentCapture && nudgeEvent.uiDirective.componentType === 'celebration-sheet' && (
         <div>{renderPIEComponent()}</div>
+      )}
+
+      {/* ── Payment capture sheet ──── */}
+      {showPaymentCapture && nudgeEvent && nudgeEvent.uiDirective.componentType === 'payment-capture-sheet' && (
+        <PaymentCaptureSheet
+          directive={nudgeEvent.uiDirective}
+          onInteraction={handleInteraction}
+        />
       )}
 
       {/* ── Legacy confetti fallback ──── */}
@@ -536,10 +591,10 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
             }}>
               {/* Price + fees */}
               <div style={{ flexShrink: 0 }}>
-                <div style={{ color: colorDefault, fontSize: 16, fontWeight: 700, lineHeight: '20px' }}>
+                <div style={{ color: colorDefault, fontSize: 16, fontWeight: 700, lineHeight: '20px', fontFamily: bodyFont }}>
                   £{(totalWithFees / 100).toFixed(2)}
                 </div>
-                <div style={{ color: 'rgba(0,0,0,0.64)', fontSize: 12, lineHeight: '16px' }}>
+                <div style={{ color: 'rgba(0,0,0,0.64)', fontSize: 12, lineHeight: '16px', fontFamily: bodyFont }}>
                   inc. £{(basket.deliveryFee / 100).toFixed(2)} fees
                 </div>
               </div>

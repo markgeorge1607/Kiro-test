@@ -55,7 +55,7 @@ The UI layer must align with the [PIE Design System](https://www.pie.design/) â€
 
 ### Typography
 
-- Primary font: JET Sans Digital. Fallback: Arial. Code: PT Mono.
+- Primary font: JET Sans Digital, Takeaway Sans. Fallback: Arial. Code: PT Mono.
 - Type scale uses multiples of 4px for sizes and line height (aligns to 4px vertical grid).
 - Headings and subheadings are responsive (different sizes for screens >768px vs <768px). Body styles are fixed.
 - Left-align text by default. Centre alignment should be used sparingly.

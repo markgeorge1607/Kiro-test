@@ -11,6 +11,7 @@ import QuickToggle from '../pie/QuickToggle';
 import ConfettiAnimation from '../pie/ConfettiAnimation';
 import ArchetypeToggle from '../pie/ArchetypeToggle';
 import CelebrationBottomSheet from '../pie/CelebrationBottomSheet';
+import PaymentCaptureSheet from '../pie/PaymentCaptureSheet';
 import { useBasket } from '../state/BasketContext';
 
 // ── Props ────────────────────────────────────────────────────────────
@@ -58,6 +59,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     registerComponent('confetti', ConfettiAnimation);
     registerComponent('archetype-toggle', ArchetypeToggle);
     registerComponent('celebration-sheet', CelebrationBottomSheet);
+    registerComponent('payment-capture-sheet', PaymentCaptureSheet);
 
     return () => {
       clearRegistry();
@@ -147,7 +149,8 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     <div
       className="checkout-page"
       style={{
-        fontFamily: "'JET Sans Digital', Arial, sans-serif",
+        fontFamily: "'Takeaway Sans', 'JET Sans Digital', Arial, sans-serif",
+        fontWeight: 400,
         padding: '16px',
         textAlign: 'left',
       }}
