@@ -171,7 +171,7 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1000,
           background: 'white', borderRadius: '16px 16px 0 0',
           fontFamily: font, maxWidth: 480, margin: '0 auto',
-          maxHeight: '95vh', display: 'flex', flexDirection: 'column',
+          maxHeight: 'calc(100vh - 64px)', display: 'flex', flexDirection: 'column',
           animation: 'nudge-slide-up 0.35s ease-out',
         }}
       >
@@ -255,7 +255,7 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
           </div>
 
           {/* ── FAQ Section ───────────────────────────────────────── */}
-          <div style={{ paddingTop: 8 }}>
+          <div style={{ paddingTop: 8, paddingBottom: 24 }}>
             <p style={{
               margin: 0, padding: '0 16px', fontSize: 16, fontWeight: 700,
               lineHeight: '24px', color: colorDefault, fontFamily: bodyFont,
@@ -300,8 +300,8 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
             type="button"
             onClick={onClose}
             style={{
-              width: '100%', background: 'transparent', color: colorBrand,
-              border: `2px solid ${colorBrand}`, borderRadius: 5000,
+              width: '100%', background: 'transparent', color: colorDefault,
+              border: 'none', borderRadius: 5000,
               padding: '10px 24px', fontSize: 16, fontWeight: 700,
               lineHeight: '24px', cursor: 'pointer', fontFamily: font, textAlign: 'center',
             }}
