@@ -154,6 +154,10 @@ export class NudgeSequenceEngine {
         const p = provided as { type: 'subscription-upsell'; monthlyFeesExceed: number };
         return p.monthlyFeesExceed > stepTrigger.monthlyFeesExceed;
       }
+      case 'offer-tile-tapped': {
+        const p = provided as { type: 'offer-tile-tapped'; offerId: string };
+        return p.offerId === stepTrigger.offerId;
+      }
       default:
         return false;
     }

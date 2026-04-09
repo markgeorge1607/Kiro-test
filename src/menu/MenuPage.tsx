@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import type { BasketItem, NudgeEvent, PIEInteractionEvent } from '../types';
 import { useBasket } from '../state/BasketContext';
 import { CheckoutNudgeController } from '../checkout/CheckoutNudgeController';
+import { OfferNudgeController } from '../checkout/OfferNudgeController';
 import {
   registerComponent,
   render as pieRender,
@@ -84,18 +85,25 @@ const colorDivider = 'rgba(0,0,0,0.08)';
 
 interface MenuPageProps {
   controller: CheckoutNudgeController;
+  offerController: OfferNudgeController;
   userId: string;
   archetypeNames?: string[];
   activeArchetype?: string;
   onArchetypeSwitch?: (archetype: string) => void;
 }
 
-const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames = [], activeArchetype, onArchetypeSwitch }) => {
+const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId, archetypeNames = [], activeArchetype, onArchetypeSwitch }) => {
   const { state: basket, addItem, activateTrial } = useBasket();
   const [nudgeEvent, setNudgeEvent] = useState<NudgeEvent | null>(null);
   const [nudgeTriggered, setNudgeTriggered] = useState(false);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const [showPaymentCapture, setShowPaymentCapture] = useState(false);
+
+  // ── Independent offer flow state (Req 11.1, 11.2) ──────────────
+  const [offerNudgeEvent, setOfferNudgeEvent] = useState<NudgeEvent | null>(null);
+  const [showOfferBottomSheet, setShowOfferBottomSheet] = useState(false);
+  const [showOfferPaymentCapture, setShowOfferPaymentCapture] = useState(false);
+  const [showOfferCelebration, setShowOfferCelebration] = useState(false);
 
   useEffect(() => {
     registerComponent('savings-badge', SavingsBadge);
@@ -114,11 +122,18 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
     setShowBottomSheet(false);
     setShowPaymentCapture(false);
 
+    // Reset offer flow state
+    setOfferNudgeEvent(null);
+    setShowOfferBottomSheet(false);
+    setShowOfferPaymentCapture(false);
+    setShowOfferCelebration(false);
+
     // Initialize the controller eagerly so the offers strip is always
     // populated with the latest personalised offers, even before the
     // user adds anything to the basket.
     controller.initialize(userId);
-  }, [controller, userId]);
+    offerController.initialize(userId);
+  }, [controller, offerController, userId]);
 
   const handleAdd = useCallback((item: BasketItem) => {
     addItem(item);
@@ -140,12 +155,16 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
   }, [addItem, controller, basket.deliveryFee, basket.items, nudgeTriggered]);
 
   const handleInteraction = useCallback((event: PIEInteractionEvent) => {
-    // ── Offers pill strip: JET+ offer tapped → open NudgeBottomSheet ──
+    // ── Offers pill strip: JET+ offer tapped → route to OfferNudgeController ──
     if (event.componentType === 'offers-pill-strip' && event.action === 'offer-tapped') {
       const offerId = event.payload?.offerId as string;
       const offer = OFFERS.find(o => o.id === offerId);
       if (offer?.variant === 'jetplus') {
-        setShowBottomSheet(true);
+        const offerEvent = offerController.handleOfferTileTapped(offerId);
+        if (offerEvent) {
+          setOfferNudgeEvent(offerEvent);
+          setShowOfferBottomSheet(true);
+        }
       }
       return;
     }
@@ -184,7 +203,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
     }
 
     setNudgeEvent(nextEvent);
-  }, [controller, activateTrial]);
+  }, [controller, offerController, activateTrial]);
 
   const renderPIEComponent = () => {
     if (!nudgeEvent) return null;
@@ -264,6 +283,54 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
       }
     }
   }, [controller, nudgeEvent]);
+
+  // ── Offer flow: NudgeBottomSheet "Unlock benefits" handler ──────
+  const handleOfferStartTrial = useCallback(() => {
+    const nextEvent = offerController.handleInteraction({
+      componentType: 'nudge-bottom-sheet',
+      action: 'start-trial',
+    });
+    if (nextEvent && nextEvent.uiDirective.componentType === 'payment-capture-sheet') {
+      setOfferNudgeEvent(nextEvent);
+      setShowOfferBottomSheet(false);
+      setShowOfferPaymentCapture(true);
+    }
+  }, [offerController]);
+
+  // ── Offer flow: NudgeBottomSheet dismiss handler ────────────────
+  const handleOfferBottomSheetClose = useCallback(() => {
+    setShowOfferBottomSheet(false);
+    offerController.reset();
+  }, [offerController]);
+
+  // ── Offer flow: PaymentCaptureSheet interaction handler ─────────
+  const handleOfferPaymentInteraction = useCallback((event: PIEInteractionEvent) => {
+    if (event.componentType === 'payment-capture-sheet' && event.action === 'payment-confirmed') {
+      const nextEvent = offerController.handleInteraction(event);
+      if (nextEvent && nextEvent.uiDirective.componentType === 'celebration-sheet') {
+        setOfferNudgeEvent(nextEvent);
+        setShowOfferPaymentCapture(false);
+        activateTrial();
+        setShowOfferCelebration(true);
+      }
+      return;
+    }
+    if (event.componentType === 'payment-capture-sheet' && event.action === 'dismissed') {
+      offerController.handleInteraction(event);
+      setShowOfferPaymentCapture(false);
+      setShowOfferBottomSheet(true);
+      return;
+    }
+  }, [offerController, activateTrial]);
+
+  // ── Offer flow: CelebrationBottomSheet interaction handler ──────
+  const handleOfferCelebrationInteraction = useCallback((event: PIEInteractionEvent) => {
+    if (event.componentType === 'celebration-sheet' && event.action === 'dismissed') {
+      setShowOfferCelebration(false);
+      setOfferNudgeEvent(null);
+      offerController.reset();
+    }
+  }, [offerController]);
 
   return (
     <div style={{ fontFamily: font, background: 'white', overflow: 'hidden', position: 'relative', width: '100%', paddingTop: 10 }}>
@@ -550,6 +617,34 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, userId, archetypeNames 
           </div>
           <div>{renderPIEComponent()}</div>
         </div>
+      )}
+
+      {/* ── Offer flow: NudgeBottomSheet ──── */}
+      {showOfferBottomSheet && offerNudgeEvent && (
+        <NudgeBottomSheet
+          archetype={activeArchetype ?? 'squeezed-saver'}
+          headline={String(offerNudgeEvent.uiDirective.props.headline ?? '')}
+          body={<p style={{ margin: 0, fontFamily: bodyFont }}>{offerNudgeEvent.message}</p>}
+          bannerText={String(offerNudgeEvent.uiDirective.props.bannerText ?? '')}
+          onStartTrial={handleOfferStartTrial}
+          onClose={handleOfferBottomSheetClose}
+        />
+      )}
+
+      {/* ── Offer flow: PaymentCaptureSheet ──── */}
+      {showOfferPaymentCapture && offerNudgeEvent && offerNudgeEvent.uiDirective.componentType === 'payment-capture-sheet' && (
+        <PaymentCaptureSheet
+          directive={offerNudgeEvent.uiDirective}
+          onInteraction={handleOfferPaymentInteraction}
+        />
+      )}
+
+      {/* ── Offer flow: CelebrationBottomSheet ──── */}
+      {showOfferCelebration && offerNudgeEvent && offerNudgeEvent.uiDirective.componentType === 'celebration-sheet' && (
+        <CelebrationBottomSheet
+          directive={offerNudgeEvent.uiDirective}
+          onInteraction={handleOfferCelebrationInteraction}
+        />
       )}
 
       {/* ── Spacer for sticky bar ─────────────────────────── */}

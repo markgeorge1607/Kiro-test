@@ -32,7 +32,8 @@ export type TriggerCondition =
   | { type: 'nudge-tapped'; stepId: string }
   | { type: 'trial-activated' }
   | { type: 'payment-capture-requested' }
-  | { type: 'subscription-upsell'; monthlyFeesExceed: number };
+  | { type: 'subscription-upsell'; monthlyFeesExceed: number }
+  | { type: 'offer-tile-tapped'; offerId: string };
 
 // ── UI Directive ─────────────────────────────────────────────────────
 

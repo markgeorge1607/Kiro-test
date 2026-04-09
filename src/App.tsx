@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { BasketProvider } from './state/BasketContext';
 import MenuPage from './menu/MenuPage';
 import { CheckoutNudgeController } from './checkout/CheckoutNudgeController';
+import { OfferNudgeController } from './checkout/OfferNudgeController';
 import { UserContextEvaluator } from './conversational/UserContextEvaluator';
 import { StrategySelector } from './conversational/StrategySelector';
 import { createDefaultRegistry } from './conversational/ArchetypeRegistry';
@@ -19,7 +20,7 @@ const INITIAL_BASKET: BasketState = {
 const App: React.FC = () => {
   const [activeArchetype, setActiveArchetype] = useState('squeezed-saver');
 
-  const controller = useMemo(() => {
+  const { controller, offerController } = useMemo(() => {
     const registry = createDefaultRegistry();
     const provider = () => ({
       membershipStatus: 'non-member' as const,
@@ -29,7 +30,10 @@ const App: React.FC = () => {
     });
     const evaluator = new UserContextEvaluator(provider, registry);
     const selector = new StrategySelector();
-    return new CheckoutNudgeController(evaluator, selector, registry);
+    return {
+      controller: new CheckoutNudgeController(evaluator, selector, registry),
+      offerController: new OfferNudgeController(evaluator, selector, registry),
+    };
   }, [activeArchetype]);
 
   return (
@@ -45,6 +49,7 @@ const App: React.FC = () => {
         <BasketProvider initialState={INITIAL_BASKET}>
           <MenuPage
             controller={controller}
+            offerController={offerController}
             userId="demo-user"
             archetypeNames={ARCHETYPE_NAMES}
             activeArchetype={activeArchetype}
