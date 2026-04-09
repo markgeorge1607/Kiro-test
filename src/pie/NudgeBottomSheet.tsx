@@ -219,7 +219,7 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
               </div>
             </div>
             {/* Hero title — flows naturally below the background */}
-            <div style={{ padding: '16px 16px 8px', textAlign: 'center' }}>
+            <div style={{ padding: '16px 16px 4px', textAlign: 'center' }}>
               <p style={{
                 margin: 0, fontSize: 28, lineHeight: '32px', fontWeight: 1000,
                 color: colorDefault, fontFamily: font,
