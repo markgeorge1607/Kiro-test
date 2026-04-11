@@ -61,8 +61,8 @@ const MENU_ITEMS: MenuItem[] = [
     calories: 'from 2378 kcal • from 2 servings',
     image: imgDishImage,
     tags: [
-      { label: 'Spicy', icon: imgSpicy },
-      { label: 'Vegetarian', icon: imgVegetarian },
+      { label: 'Spicy', icon: imgVegetarian },
+      { label: 'Vegetarian', icon: imgSpicy },
     ],
   },
   {

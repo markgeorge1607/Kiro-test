@@ -63,3 +63,33 @@ describe('TranslationCache', () => {
     expect(cache.get('de', '')).toBe('empty-translation');
   });
 });
+
+// Feature: translation-fallback-layer, Property 5: Cache round-trip
+import * as fc from 'fast-check';
+
+describe('TranslationCache — Property-Based Tests', () => {
+  /**
+   * Property 5: Cache round-trip
+   * For any locale, source text, and translation string, storing a translation
+   * in the TranslationCache and then retrieving it with the same (locale, sourceText)
+   * key SHALL return the identical translation string.
+   *
+   * **Validates: Requirements 5.5**
+   */
+  it('cache round-trip: set then get returns the identical translation', () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1 }),  // locale
+        fc.string(),                   // sourceText
+        fc.string(),                   // translation
+        (locale, sourceText, translation) => {
+          const cache = new TranslationCache();
+          cache.set(locale, sourceText, translation);
+          expect(cache.get(locale, sourceText)).toBe(translation);
+          expect(cache.has(locale, sourceText)).toBe(true);
+        },
+      ),
+      { numRuns: 100 },
+    );
+  });
+});

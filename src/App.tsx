@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { BasketProvider } from './state/BasketContext';
 import { TranslationProvider } from './translation/TranslationContext';
-import { TranslationService } from './translation/TranslationService';
+import { createTranslationService } from './translation/createTranslationService';
 import MenuPage from './menu/MenuPage';
 import { CheckoutNudgeController } from './checkout/CheckoutNudgeController';
 import { OfferNudgeController } from './checkout/OfferNudgeController';
@@ -22,10 +22,7 @@ const INITIAL_BASKET: BasketState = {
 const App: React.FC = () => {
   const [activeArchetype, setActiveArchetype] = useState('squeezed-saver');
 
-  const translationService = useMemo(
-    () => new TranslationService({ apiKey: import.meta.env.VITE_GEMINI_API_KEY ?? '' }),
-    [],
-  );
+  const translationService = useMemo(() => createTranslationService(), []);
 
   const { controller, offerController } = useMemo(() => {
     const registry = createDefaultRegistry();

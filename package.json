@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "test": "vitest --run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "extract-translations": "npx tsx scripts/extract-translations.ts"
   },
   "dependencies": {
     "@justeattakeaway/pie-css": "^0.32.0",
