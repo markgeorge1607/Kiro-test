@@ -3,7 +3,7 @@ import type { PIEComponentProps } from '../types';
 import { useTranslation } from '../translation/TranslationContext';
 
 // ── Local images from /images folder ─────────────────────────────────
-import imgJetPlusLogo from '../../images/JET+ - read description.png';
+import imgJetPlusLogo from '../../Images/JET+ - read description.png';
 
 interface Offer {
   id: string;

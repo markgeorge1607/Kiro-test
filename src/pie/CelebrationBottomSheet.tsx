@@ -4,7 +4,7 @@ import type { PIEComponentProps } from '../types';
 import { useTranslation } from '../translation/TranslationContext';
 
 // ── Local images from /images folder ─────────────────────────────────
-import imgJetLogo from '../../images/JET+ - read description.png';
+import imgJetLogo from '../../Images/JET+ - read description.png';
 
 // ── Lottie confetti animation ────────────────────────────────────────
 import confettiAnimationData from '../../Animation/_03 Jet + Confetti (1).json';

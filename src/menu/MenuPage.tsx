@@ -21,11 +21,11 @@ import { useTranslation } from '../translation/TranslationContext';
 import { translateDirectiveProps } from '../translation/translateDirectiveProps';
 
 // ── Local images from /images folder ─────────────────────────────────
-import imgHeroImage from '../../images/Hero image.png';
-import imgDishImage from '../../images/dish image.png';
-import imgLogoPlaceholder from '../../images/Logo Placeholder.png';
-import imgSpicyIcon from '../../images/Dietary/Subtract.png';
-import imgVegetarianIcon from '../../images/Dietary/Vector.png';
+import imgHeroImage from '../../Images/Hero image.png';
+import imgDishImage from '../../Images/dish image.png';
+import imgLogoPlaceholder from '../../Images/Logo Placeholder.png';
+import imgSpicyIcon from '../../Images/Dietary/Subtract.png';
+import imgVegetarianIcon from '../../Images/Dietary/Vector.png';
 
 // ── PIE icon SVGs (@justeattakeaway/pie-icons) ──────────────────────
 // Build data URIs from PIE icon SVGs with the correct fill colour.

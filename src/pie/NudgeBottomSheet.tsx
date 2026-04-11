@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { useTranslation } from '../translation/TranslationContext';
 
 // ── Local images from /images folder ─────────────────────────────────
-import imgJetLogo from '../../images/JET+ - read description.png';
-import imgCreditImg from '../../images/light-jetplus-account-credit.png';
-import imgOffersImg from '../../images/light-jetplus-exclusive-offers-1.png';
-import imgDeliveryImg from '../../images/light-jetplus-free-delivery.png';
+import imgJetLogo from '../../Images/JET+ - read description.png';
+import imgCreditImg from '../../Images/light-jetplus-account-credit.png';
+import imgOffersImg from '../../Images/light-jetplus-exclusive-offers-1.png';
+import imgDeliveryImg from '../../Images/light-jetplus-free-delivery.png';
 
 // ── PIE icon SVGs (@justeattakeaway/pie-icons) ──────────────────────
 const pieIcon = (svgPath: string, color = '#242e30') =>
