@@ -1,13 +1,19 @@
+import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { render as pieRender, registerComponent, clearRegistry } from './PIERenderer';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import OffersPillStrip from './OffersPillStrip';
+import { TranslationProvider } from '../translation/TranslationContext';
 import type { UIDirective } from '../types';
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
 function makeDirective(props: Record<string, unknown> = {}): UIDirective {
   return { componentType: 'offers-pill-strip', props };
+}
+
+function renderWithTranslation(ui: React.ReactElement) {
+  return render(<TranslationProvider>{ui}</TranslationProvider>);
 }
 
 // ── Unit Tests ───────────────────────────────────────────────────────
@@ -18,7 +24,7 @@ describe('OffersPillStrip', () => {
       { id: 'offer-1', text: 'Get £10 Monthly Credit', subtitle: 'through Just Eat+ savings', variant: 'jetplus' as const },
       { id: 'offer-2', text: 'Buy 1 get 1 free', subtitle: 'When you spend £15', variant: 'standard' as const },
     ];
-    render(<OffersPillStrip directive={makeDirective({ offers })} />);
+    renderWithTranslation(<OffersPillStrip directive={makeDirective({ offers })} />);
     expect(screen.getByText('Get £10 Monthly Credit')).toBeInTheDocument();
     expect(screen.getByText('Buy 1 get 1 free')).toBeInTheDocument();
     expect(screen.getByText('through Just Eat+ savings')).toBeInTheDocument();
@@ -27,19 +33,19 @@ describe('OffersPillStrip', () => {
 
   it('single offer renders without errors', () => {
     const offers = [{ id: 'offer-1', text: 'Free delivery', variant: 'standard' as const }];
-    render(<OffersPillStrip directive={makeDirective({ offers })} />);
+    renderWithTranslation(<OffersPillStrip directive={makeDirective({ offers })} />);
     expect(screen.getByText('Free delivery')).toBeInTheDocument();
   });
 
   it('empty offers array returns null', () => {
-    const { container } = render(
+    const { container } = renderWithTranslation(
       <OffersPillStrip directive={makeDirective({ offers: [] })} />,
     );
     expect(container.innerHTML).toBe('');
   });
 
   it('missing offers prop returns null', () => {
-    const { container } = render(
+    const { container } = renderWithTranslation(
       <OffersPillStrip directive={makeDirective()} />,
     );
     expect(container.innerHTML).toBe('');
@@ -50,7 +56,7 @@ describe('OffersPillStrip', () => {
       { id: 'offer-1', text: 'Deal A', variant: 'jetplus' as const },
       { id: 'offer-2', text: 'Deal B', variant: 'standard' as const },
     ];
-    const { container } = render(
+    const { container } = renderWithTranslation(
       <OffersPillStrip directive={makeDirective({ offers })} />,
     );
     const arrows = container.querySelectorAll('.pie-offer-card__arrow');
@@ -62,7 +68,7 @@ describe('OffersPillStrip', () => {
 
   it('jetplus variant renders with orange border', () => {
     const offers = [{ id: 'jp-1', text: 'JET+ Deal', variant: 'jetplus' as const }];
-    const { container } = render(
+    const { container } = renderWithTranslation(
       <OffersPillStrip directive={makeDirective({ offers })} />,
     );
     const card = container.querySelector('.pie-offer-card--jetplus');
@@ -71,7 +77,7 @@ describe('OffersPillStrip', () => {
 
   it('standard variant renders with tonal background class', () => {
     const offers = [{ id: 'std-1', text: 'Standard Deal', variant: 'standard' as const }];
-    const { container } = render(
+    const { container } = renderWithTranslation(
       <OffersPillStrip directive={makeDirective({ offers })} />,
     );
     const card = container.querySelector('.pie-offer-card--standard');
@@ -81,7 +87,7 @@ describe('OffersPillStrip', () => {
   it('card tap fires onInteraction with correct payload', () => {
     const onInteraction = vi.fn();
     const offers = [{ id: 'tap-1', text: 'Tap me', variant: 'standard' as const }];
-    render(
+    renderWithTranslation(
       <OffersPillStrip
         directive={makeDirective({ offers })}
         onInteraction={onInteraction}
@@ -107,7 +113,7 @@ describe('OffersPillStrip', () => {
       });
       const element = pieRender(directive);
       expect(element).not.toBeNull();
-      render(element!);
+      renderWithTranslation(element!);
       expect(screen.getByText('Half price')).toBeInTheDocument();
     });
   });
@@ -117,7 +123,7 @@ describe('OffersPillStrip', () => {
       { id: 'a1', text: 'Offer A', variant: 'standard' as const },
       { id: 'a2', text: 'Offer B', variant: 'jetplus' as const },
     ];
-    const { container } = render(
+    const { container } = renderWithTranslation(
       <OffersPillStrip directive={makeDirective({ offers })} />,
     );
     const list = container.querySelector('[role="list"]');

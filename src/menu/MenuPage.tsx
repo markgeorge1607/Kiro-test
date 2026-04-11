@@ -16,23 +16,33 @@ import CelebrationBottomSheet from '../pie/CelebrationBottomSheet';
 import NudgeBottomSheet from '../pie/NudgeBottomSheet';
 import OffersPillStrip from '../pie/OffersPillStrip';
 import PaymentCaptureSheet from '../pie/PaymentCaptureSheet';
+import LanguageSelector from '../pie/LanguageSelector';
+import { useTranslation } from '../translation/TranslationContext';
+import { translateDirectiveProps } from '../translation/translateDirectiveProps';
 
-// ── Figma asset URLs (expire after 7 days) ──────────────────────────
-const imgHeroImage = 'https://www.figma.com/api/mcp/asset/3e9ee9d4-55f4-4c24-b4d2-8cdbdf915150';
-const imgLogoPlaceholder = 'https://www.figma.com/api/mcp/asset/63312969-970b-474a-95e9-eeda4247e68d';
-const imgStarFilled = 'https://www.figma.com/api/mcp/asset/cb2485c5-9b2d-48b4-a9f8-ae7aba961a64';
-const imgSeparator = 'https://www.figma.com/api/mcp/asset/7ff5f0a1-d8be-4b31-ac06-ed9fc0d02fef';
-const imgBike = 'https://www.figma.com/api/mcp/asset/9983480f-6ef5-4261-9de2-e648ad202f5a';
-const imgDishImage = 'https://www.figma.com/api/mcp/asset/7a5180c0-c2ab-434c-bb24-bccdb185a32d';
-const imgDishImage1 = 'https://www.figma.com/api/mcp/asset/f85a0997-026b-4b36-b685-a3bbf69125ab';
-const imgPlus = 'https://www.figma.com/api/mcp/asset/d1b21af8-c7ca-4515-a162-621f8af81152';
-const imgSpicy = 'https://www.figma.com/api/mcp/asset/f9986662-bfaa-4277-a06f-ceb5b304f280';
-const imgVegetarian = 'https://www.figma.com/api/mcp/asset/4a8ffe6f-c00c-44e9-b903-736daea3dab4';
-const imgOffer = 'https://www.figma.com/api/mcp/asset/47310c6b-4861-4715-b5c0-8fdb625a1780';
-const imgUsers = 'https://www.figma.com/api/mcp/asset/6fb64e7a-f277-45fc-bacc-ff0453fb2a4a';
-const imgChevronLeft = 'https://www.figma.com/api/mcp/asset/11519929-fe6f-4592-a56c-be827575f1c3';
-const imgSearch = 'https://www.figma.com/api/mcp/asset/237048fa-7745-4640-af1a-2615c75caab5';
-const imgMoreHorizontal = 'https://www.figma.com/api/mcp/asset/292badd0-188f-4fcb-a36f-2d2badde5a24';
+// ── Local images from /images folder ─────────────────────────────────
+import imgHeroImage from '../../images/Hero image.png';
+import imgDishImage from '../../images/dish image.png';
+import imgLogoPlaceholder from '../../images/Logo Placeholder.png';
+import imgSpicyIcon from '../../images/Dietary/Subtract.png';
+import imgVegetarianIcon from '../../images/Dietary/Vector.png';
+
+// ── PIE icon SVGs (@justeattakeaway/pie-icons) ──────────────────────
+// Build data URIs from PIE icon SVGs with the correct fill colour.
+const pieIcon = (svgPath: string, color = '#242e30') =>
+  `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" role="presentation" focusable="false" fill="${color}" viewBox="0 0 16 16">${svgPath}</svg>`)}`;
+
+const imgChevronLeft = pieIcon('<path d="M10.96 2.82 5.605 8l5.399 5.197-.875.963-5.565-5.364a1.164 1.164 0 0 1 0-1.671l5.495-5.25.901.945Z"/>');
+const imgSearch = pieIcon('<path d="M14.125 13.162 11.15 10.18a5.049 5.049 0 1 0-.936.936l2.948 3.01.963-.963Zm-7-2.318a3.718 3.718 0 1 1 3.719-3.72 3.728 3.728 0 0 1-3.72 3.72Z"/>');
+const imgMoreHorizontal = pieIcon('<path d="M3.188 6.688a1.313 1.313 0 1 1 0 2.625 1.313 1.313 0 0 1 0-2.626ZM6.688 8a1.313 1.313 0 1 0 2.625 0 1.313 1.313 0 0 0-2.626 0ZM11.5 8a1.313 1.313 0 1 0 2.625 0A1.313 1.313 0 0 0 11.5 8Z"/>');
+const imgPlus = pieIcon('<path d="M14.125 7.344H8.656V1.875H7.344v5.469H1.875v1.312h5.469v5.469h1.312V8.656h5.469V7.344Z"/>');
+const imgStarFilled = pieIcon('<path d="m12.288 14.449-4.183-2.197a.219.219 0 0 0-.21 0L3.713 14.45 4.5 9.794a.254.254 0 0 0 0-.193L1.07 6.302l4.673-.682a.228.228 0 0 0 .166-.114L8 1.271l2.091 4.235a.227.227 0 0 0 .167.114l4.672.682-3.386 3.3a.254.254 0 0 0-.061.192l.805 4.655Z"/>', '#e8a000');
+const imgSeparator = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="2" height="2"><circle cx="1" cy="1" r="1" fill="#242e30"/></svg>')}`;
+const imgBike = pieIcon('<path d="M12.139 7.405 11 4.158a.218.218 0 0 1 0-.157.246.246 0 0 1 .158-.123l1.216-.446v-1.4l-1.627.613a1.514 1.514 0 0 0-.998 1.933l.359 1.015H9.75a2.433 2.433 0 0 0-1.925.963l-1.207 1.61-1.06-2.135h.692V4.718h-3.5v1.313H4.09l.726 1.461a2.87 2.87 0 0 0-.735-.105 2.826 2.826 0 1 0 2.826 2.818v-.201l1.97-2.66a1.111 1.111 0 0 1 .874-.438h.831l.254.717a2.844 2.844 0 1 0 1.313-.218h-.01ZM4.08 11.719a1.514 1.514 0 1 1 1.514-1.514 1.505 1.505 0 0 1-1.514 1.514Zm7.875 0a1.514 1.514 0 1 1 1.401-.934 1.505 1.505 0 0 1-1.4.934Z"/>');
+const imgSpicy = imgSpicyIcon;
+const imgVegetarian = imgVegetarianIcon;
+const imgOffer = pieIcon('<path d="M7.676 14.939 1.087 8.35l6.38-6.387a1.409 1.409 0 0 1 1.12-.403l5.337.534.533 5.346a1.373 1.373 0 0 1-.393 1.111L7.676 14.94ZM2.942 8.35l4.734 4.734 5.46-5.46-.411-4.331-4.27-.42L2.942 8.35Zm7.683-3.85a.875.875 0 1 0 0 1.75.875.875 0 0 0 0-1.75Z"/>');
+const imgUsers = pieIcon('<path d="m1.21 11.824.49-1.391a2.87 2.87 0 0 1 2.021-1.75 2.704 2.704 0 0 1-.481-.368 2.406 2.406 0 1 1 3.395 0 1.898 1.898 0 0 1-.324.271 2.905 2.905 0 0 1 1.689.5 2.94 2.94 0 0 1 1.697-.535 2.415 2.415 0 0 1-1.04-1.977 2.406 2.406 0 1 1 4.103 1.75c-.146.14-.308.263-.481.367a2.853 2.853 0 0 1 2.021 1.75l.49 1.392h-1.391l-.341-.954A1.584 1.584 0 0 0 11.5 9.855H9.75a1.583 1.583 0 0 0-1.523 1.015l-.34.954H6.46l.49-1.391c0-.123.105-.237.157-.35a1.653 1.653 0 0 0-.857-.228H4.5a1.583 1.583 0 0 0-1.523 1.015l-.34.954H1.21Zm8.75-5.25a1.094 1.094 0 1 0 .324-.77 1.084 1.084 0 0 0-.315.77H9.96Zm-6.125 0a1.094 1.094 0 1 0 .324-.77 1.085 1.085 0 0 0-.315.77h-.009Z"/>');
 
 // ── Menu data ────────────────────────────────────────────────────────
 
@@ -57,13 +67,13 @@ const MENU_ITEMS: MenuItem[] = [
   },
   {
     id: 'sushi-2', name: 'Chicken Souvlaki', price: 1050, quantity: 1,
-    image: imgDishImage1,
+    image: imgDishImage,
     offer: 'Get a freebie with this item',
   },
   { id: 'sushi-3', name: 'Edamame', price: 499, quantity: 1, image: imgDishImage },
-  { id: 'sushi-4', name: 'Miso Soup', price: 399, quantity: 1, image: imgDishImage1 },
+  { id: 'sushi-4', name: 'Miso Soup', price: 399, quantity: 1, image: imgDishImage },
   { id: 'sushi-5', name: 'Gyoza (6pc)', price: 699, quantity: 1, image: imgDishImage },
-  { id: 'sushi-6', name: 'Teriyaki Chicken', price: 1199, quantity: 1, image: imgDishImage1 },
+  { id: 'sushi-6', name: 'Teriyaki Chicken', price: 1199, quantity: 1, image: imgDishImage },
 ];
 
 // ── Offers data ─────────────────────────────────────────────────────
@@ -94,6 +104,7 @@ interface MenuPageProps {
 
 const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId, archetypeNames = [], activeArchetype, onArchetypeSwitch }) => {
   const { state: basket, addItem, activateTrial } = useBasket();
+  const { locale, setLocale, isTranslating, t } = useTranslation();
   const [nudgeEvent, setNudgeEvent] = useState<NudgeEvent | null>(null);
   const [nudgeTriggered, setNudgeTriggered] = useState(false);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
@@ -207,7 +218,11 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
 
   const renderPIEComponent = () => {
     if (!nudgeEvent) return null;
-    const element = pieRender(nudgeEvent.uiDirective);
+    const translatedDirective = {
+      ...nudgeEvent.uiDirective,
+      props: translateDirectiveProps(nudgeEvent.uiDirective.props, t),
+    };
+    const element = pieRender(translatedDirective);
     if (!element) return null;
     return React.cloneElement(element, { onInteraction: handleInteraction });
   };
@@ -220,23 +235,23 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
   const isSam = activeArchetype === 'squeezed-saver';
   const deliveryFeeFormatted = `£${(basket.deliveryFee / 100).toFixed(2)}`;
 
-  const bottomSheetHeadline = isSam ? 'Wake up, Sam!' : 'Ready to optimise, Alex?';
+  const bottomSheetHeadline = isSam ? t('Wake up, Sam!') : t('Ready to optimise, Alex?');
 
   const bottomSheetBody = isSam ? (
     <p style={{ margin: 0, fontFamily: bodyFont }}>
-      {'Stop paying the \'convenience tax.\' You\'ve spent '}
+      {t('Stop paying the \'convenience tax.\' You\'ve spent ')}
       <span style={{ fontWeight: 700 }}>£15</span>
-      {' on delivery this month—save '}
+      {t(' on delivery this month—save ')}
       <span style={{ fontWeight: 700 }}>£3.50</span>
-      {' on this order with a free '}
-      <span style={{ fontWeight: 700 }}>14-day JET+ trial</span>
+      {t(' on this order with a free ')}
+      <span style={{ fontWeight: 700 }}>{t('14-day JET+ trial')}</span>
       {'.'}
     </p>
   ) : (
     <p style={{ margin: 0, fontFamily: bodyFont }}>
-      {'Most '}
+      {t('Most ')}
       <span style={{ fontWeight: 700 }}>JET+</span>
-      {' members save over '}
+      {t(' members save over ')}
       <span style={{ fontWeight: 700 }}>£20 a month</span>
       {'.'}
     </p>
@@ -244,20 +259,20 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
 
   const bottomSheetBanner = isSam ? (
     <p style={{ margin: 0, fontFamily: bodyFont }}>
-      {'Let\'s eliminate that fee right now. Start your free '}
-      <span style={{ fontWeight: 700 }}>14-day JET+ trial</span>
-      {' and '}
-      <span style={{ fontWeight: 700 }}>save {deliveryFeeFormatted}</span>
-      {' on this order.'}
+      {t('Let\'s eliminate that fee right now. Start your free ')}
+      <span style={{ fontWeight: 700 }}>{t('14-day JET+ trial')}</span>
+      {t(' and ')}
+      <span style={{ fontWeight: 700 }}>{t('save')} {deliveryFeeFormatted}</span>
+      {t(' on this order.')}
     </p>
   ) : (
     <p style={{ margin: 0, fontFamily: bodyFont }}>
-      {'Start your '}
-      <span style={{ fontWeight: 700 }}>14-day JET+</span>
+      {t('Start your ')}
+      <span style={{ fontWeight: 700 }}>{t('14-day JET+')}</span>
       {' '}
-      <span style={{ fontWeight: 700 }}>trial</span>
-      {' to get this delivery for £0 and unlock '}
-      <span style={{ fontWeight: 700 }}>exclusive member-only offers</span>
+      <span style={{ fontWeight: 700 }}>{t('trial')}</span>
+      {t(' to get this delivery for £0 and unlock ')}
+      <span style={{ fontWeight: 700 }}>{t('exclusive member-only offers')}</span>
     </p>
   );
 
@@ -387,6 +402,8 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
             </div>
           )}
 
+          <LanguageSelector locale={locale} isTranslating={isTranslating} onLocaleChange={setLocale} />
+
           <button type="button" aria-label="Search" style={{
             background: 'transparent', border: 'none', borderRadius: 120, width: 40, height: 40,
             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0,
@@ -399,7 +416,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
       {/* ── Hero image ──────────────────────────────────────────── */}
       <div style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', padding: '0 16px', boxSizing: 'border-box' }}>
         <div style={{ position: 'relative', width: '100%', height: 152, borderRadius: 16, overflow: 'hidden' }}>
-          <img alt="Restaurant hero" src={imgHeroImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img alt={t("Restaurant hero")} src={imgHeroImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           {/* Group order button */}
           <button type="button" style={{
             position: 'absolute', bottom: 12, right: 12, background: colorSubtle,
@@ -408,7 +425,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
             cursor: 'pointer', minWidth: 48,
           }}>
             <img alt="" src={imgUsers} style={{ width: 16, height: 16 }} />
-            <span style={{ fontWeight: 700, fontSize: 14, lineHeight: '20px', color: colorDefault, fontFamily: bodyFont }}>Group order</span>
+            <span style={{ fontWeight: 700, fontSize: 14, lineHeight: '20px', color: colorDefault, fontFamily: bodyFont }}>{t("Group order")}</span>
           </button>
         </div>
         {/* Restaurant logo */}
@@ -417,7 +434,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
           background: 'white', border: `1px solid ${colorBorder}`, borderRadius: 8,
           display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 1,
         }}>
-          <img alt="Restaurant logo" src={imgLogoPlaceholder} style={{ width: '100%', height: '100%', borderRadius: 7, objectFit: 'cover' }} />
+          <img alt={t("Restaurant logo")} src={imgLogoPlaceholder} style={{ width: '100%', height: '100%', borderRadius: 7, objectFit: 'cover' }} />
         </div>
       </div>
 
@@ -426,13 +443,13 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
         <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', padding: '8px 16px', paddingTop: 32 }}>
           <div style={{ flex: 1 }}>
             <p style={{ fontSize: 24, fontWeight: 800, lineHeight: '32px', color: colorDefault, margin: 0 }}>
-              The Greek Kitchen
+              {t("The Greek Kitchen")}
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {/* Rating + min order */}
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                  <img alt="Rating" src={imgStarFilled} style={{ width: 20, height: 20 }} />
+                  <img alt={t("Rating")} src={imgStarFilled} style={{ width: 20, height: 20 }} />
                   <span style={{ fontSize: 14, lineHeight: '20px', color: colorDefault }}>
                     <span style={{ fontWeight: 700, fontFamily: bodyFont }}>4.9 </span>
                     <span style={{ fontWeight: 400, fontFamily: bodyFont }}>(213)</span>
@@ -440,7 +457,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
                 </div>
                 <img alt="" src={imgSeparator} style={{ width: 2, height: 2 }} />
                 <span style={{ fontSize: 14, lineHeight: '20px', color: colorDefault, fontWeight: 400, fontFamily: bodyFont }}>
-                  Min order. £{(1500 / 100).toFixed(2)}
+                  {t("Min order.")} £{(1500 / 100).toFixed(2)}
                 </span>
               </div>
               {/* Delivery fee tag */}
@@ -452,7 +469,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
                   <img alt="" src={imgBike} style={{ width: 14, height: 14 }} />
                 </div>
                 <span style={{ fontSize: 14, lineHeight: '20px', color: colorDefault, fontWeight: 400, fontFamily: bodyFont }}>
-                  Free delivery £{(basket.deliveryFee / 100).toFixed(2)}
+                  {t("Free delivery")} £{(basket.deliveryFee / 100).toFixed(2)}
                 </span>
               </div>
             </div>
@@ -483,7 +500,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
         {/* Category title */}
         <div style={{ padding: '24px 16px 8px 16px' }}>
           <p style={{ fontSize: 20, fontWeight: 800, lineHeight: '28px', color: colorDefault, margin: 0 }}>
-            Wraps
+            {t("Wraps")}
           </p>
         </div>
 
@@ -498,24 +515,24 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
                   {/* Copy */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontSize: 16, fontWeight: 700, lineHeight: '24px', color: colorDefault, margin: 0, fontFamily: bodyFont }}>
-                      {item.name}
+                      {t(item.name)}
                     </p>
                     <p style={{ fontSize: 16, fontWeight: 700, lineHeight: '24px', color: colorDefault, margin: 0, fontFamily: bodyFont }}>
                       £{(item.price / 100).toFixed(2)}
                     </p>
                     {item.description && (
                       <p style={{ fontSize: 14, fontWeight: 400, lineHeight: '20px', color: colorSubdued, margin: 0, paddingTop: 4, fontFamily: bodyFont }}>
-                        {item.description}
+                        {t(item.description)}
                       </p>
                     )}
                   </div>
                   {/* Image + add button */}
                   {item.image ? (
                     <div style={{ position: 'relative', width: 136, height: 89, flexShrink: 0 }}>
-                      <img alt={item.name} src={item.image} style={{
+                      <img alt={t(item.name)} src={item.image} style={{
                         width: 120, height: 89, borderRadius: 12, objectFit: 'cover',
                       }} />
-                      <button type="button" onClick={() => handleAdd(item)} aria-label={`Add ${item.name}`} style={{
+                      <button type="button" onClick={() => handleAdd(item)} aria-label={`${t("Add")} ${t(item.name)}`} style={{
                         position: 'absolute', top: -9, right: 0, width: 32, height: 32,
                         background: inBasket ? '#4caf50' : 'white', border: `1px solid ${colorBorder}`,
                         borderRadius: 120, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -533,7 +550,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
                       borderRadius: 5000, padding: '8px 16px', fontSize: 13, fontWeight: 600,
                       cursor: 'pointer', alignSelf: 'center', flexShrink: 0,
                     }}>
-                      {inBasket ? `Added (${inBasket.quantity})` : 'Add'}
+                      {inBasket ? `${t("Added")} (${inBasket.quantity})` : t('Add')}
                     </button>
                   )}
                 </div>
@@ -541,7 +558,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
                 {/* Calories */}
                 {item.calories && (
                   <div style={{ padding: '4px 16px 0', fontSize: 12, fontWeight: 400, lineHeight: '16px', color: colorSubdued, fontFamily: bodyFont }}>
-                    {item.calories}
+                    {t(item.calories)}
                   </div>
                 )}
 
@@ -554,7 +571,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
                         alignItems: 'center', padding: '1px 4px', height: 16,
                       }}>
                         <img alt="" src={tag.icon} style={{ width: 12, height: 12 }} />
-                        <span style={{ fontSize: 12, lineHeight: '16px', color: colorDefault }}>{tag.label}</span>
+                        <span style={{ fontSize: 12, lineHeight: '16px', color: colorDefault }}>{t(tag.label)}</span>
                       </div>
                     ))}
                   </div>
@@ -570,7 +587,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
                       <img alt="" src={imgOffer} style={{ width: 14, height: 14 }} />
                     </div>
                     <span style={{ fontSize: 14, fontWeight: 700, lineHeight: '20px', color: colorDefault, fontFamily: bodyFont }}>
-                      {item.offer}
+                      {t(item.offer)}
                     </span>
                   </div>
                 )}
@@ -613,7 +630,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
           background: '#fff8f0', border: '1px solid #e36002',
         }}>
           <div style={{ fontSize: 14, lineHeight: '1.5', marginBottom: 12, color: colorDefault }}>
-            {nudgeEvent.message}
+            {t(nudgeEvent.message)}
           </div>
           <div>{renderPIEComponent()}</div>
         </div>
@@ -623,9 +640,9 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
       {showOfferBottomSheet && offerNudgeEvent && (
         <NudgeBottomSheet
           archetype={activeArchetype ?? 'squeezed-saver'}
-          headline={String(offerNudgeEvent.uiDirective.props.headline ?? '')}
-          body={<p style={{ margin: 0, fontFamily: bodyFont }}>{offerNudgeEvent.message}</p>}
-          bannerText={String(offerNudgeEvent.uiDirective.props.bannerText ?? '')}
+          headline={t(String(offerNudgeEvent.uiDirective.props.headline ?? ''))}
+          body={<p style={{ margin: 0, fontFamily: bodyFont }}>{t(offerNudgeEvent.message)}</p>}
+          bannerText={t(String(offerNudgeEvent.uiDirective.props.bannerText ?? ''))}
           onStartTrial={handleOfferStartTrial}
           onClose={handleOfferBottomSheetClose}
         />
@@ -674,7 +691,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
                 borderRadius: '12px 12px 0 0',
               }}>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="rgba(0,0,0,0.76)" role="presentation"><path d="M12.139 7.405 11 4.158a.218.218 0 0 1 0-.157.246.246 0 0 1 .158-.123l1.216-.446v-1.4l-1.627.613a1.514 1.514 0 0 0-.998 1.933l.359 1.015H9.75a2.433 2.433 0 0 0-1.925.963l-1.207 1.61-1.06-2.135h.692V4.718h-3.5v1.313H4.09l.726 1.461a2.87 2.87 0 0 0-.735-.105 2.826 2.826 0 1 0 2.826 2.818v-.201l1.97-2.66a1.111 1.111 0 0 1 .874-.438h.831l.254.717a2.844 2.844 0 1 0 1.313-.218h-.01ZM4.08 11.719a1.514 1.514 0 1 1 1.514-1.514 1.505 1.505 0 0 1-1.514 1.514Zm7.875 0a1.514 1.514 0 1 1 1.401-.934 1.505 1.505 0 0 1-1.4.934Z" /></svg>
-                Add £{(movGap / 100).toFixed(2)} to get it delivered
+                {t("Add")} £{(movGap / 100).toFixed(2)} {t("to get it delivered")}
               </div>
             )}
 
@@ -690,7 +707,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
                   £{(totalWithFees / 100).toFixed(2)}
                 </div>
                 <div style={{ color: 'rgba(0,0,0,0.64)', fontSize: 12, lineHeight: '16px', fontFamily: bodyFont }}>
-                  inc. £{(basket.deliveryFee / 100).toFixed(2)} fees
+                  {t("inc.")} £{(basket.deliveryFee / 100).toFixed(2)} {t("fees")}
                 </div>
               </div>
 
@@ -718,7 +735,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ controller, offerController, userId
                     {itemCount}
                   </span>
                 </span>
-                View basket
+                {t("View basket")}
               </button>
             </div>
           </div>

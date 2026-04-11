@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Lottie from 'lottie-react';
 import type { PIEComponentProps } from '../types';
+import confettiAnimationData from '../../Animation/_03 Jet + Confetti (1).json';
 
 /**
  * ConfettiAnimation PIE component.
  *
- * Renders a fire-and-forget confetti animation targeting a specified element.
+ * Renders a fire-and-forget confetti Lottie animation targeting a specified element.
+ * Uses the JET confetti Lottie file from the Animation folder.
  * Auto-removes after the configured duration. No interaction events.
  *
  * Requirement 8.3 — Confetti Animation that triggers on a specified target element.
@@ -22,6 +25,7 @@ const ConfettiAnimation: React.FC<PIEComponentProps> = ({ directive }) => {
   const [visible, setVisible] = useState(true);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lottieRef = useRef<any>(null);
 
   useEffect(() => {
     if (targetSelector) {
@@ -63,64 +67,34 @@ const ConfettiAnimation: React.FC<PIEComponentProps> = ({ directive }) => {
   return (
     <>
       <style>{`
-        @keyframes pie-confetti-fall {
-          0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
-          100% { transform: translateY(60px) rotate(360deg); opacity: 0; }
-        }
-
-        .pie-confetti {
-          pointer-events: none;
-          overflow: hidden;
-          display: flex;
-          justify-content: center;
-          align-items: flex-start;
-          gap: var(--dt-spacing-a);
-        }
-
-        .pie-confetti__particle {
-          width: var(--dt-spacing-b);
-          height: var(--dt-spacing-b);
-          border-radius: 2px;
-          animation: pie-confetti-fall linear forwards;
-        }
-
         @media (prefers-reduced-motion: reduce) {
-          .pie-confetti__particle {
-            animation: none;
-            opacity: 0.6;
+          .pie-confetti-lottie svg {
+            animation: none !important;
           }
         }
       `}</style>
       <div
         className="pie-confetti"
-        style={positionStyle}
+        style={{
+          ...positionStyle,
+          pointerEvents: 'none',
+          overflow: 'hidden',
+        }}
         data-testid="confetti-animation"
         aria-hidden="true"
         role="presentation"
       >
-        {Array.from({ length: 12 }).map((_, i) => (
-          <span
-            key={i}
-            className="pie-confetti__particle"
-            style={{
-              backgroundColor: PARTICLE_COLOURS[i % PARTICLE_COLOURS.length],
-              animationDuration: `${duration}ms`,
-              animationDelay: `${i * 50}ms`,
-            }}
-          />
-        ))}
+        <Lottie
+          lottieRef={lottieRef}
+          animationData={confettiAnimationData}
+          loop={false}
+          autoplay={true}
+          className="pie-confetti-lottie"
+          style={{ width: '100%', height: '100%' }}
+        />
       </div>
     </>
   );
 };
-
-const PARTICLE_COLOURS = [
-  '#f36805', // product orange (--dt-color-orange)
-  '#f5a623',
-  '#4caf50',
-  '#2196f3',
-  '#e91e63',
-  '#9c27b0',
-];
 
 export default ConfettiAnimation;

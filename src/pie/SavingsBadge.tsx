@@ -1,5 +1,6 @@
 import React from 'react';
 import type { PIEComponentProps } from '../types';
+import { useTranslation } from '../translation/TranslationContext';
 
 /**
  * SavingsBadge PIE component.
@@ -13,6 +14,7 @@ const SavingsBadge: React.FC<PIEComponentProps> = ({
   directive,
   onInteraction,
 }) => {
+  const { t } = useTranslation();
   const { position, animationType } = directive.props as {
     position?: string;
     animationType?: string;
@@ -74,9 +76,9 @@ const SavingsBadge: React.FC<PIEComponentProps> = ({
         data-position={position ?? 'default'}
         onClick={handleClick}
         type="button"
-        aria-label="Savings badge"
+        aria-label={t("Savings badge")}
       >
-        💰 Savings
+        💰 {t("Savings")}
       </button>
     </>
   );

@@ -6,6 +6,7 @@ import { UserContextEvaluator, UserData } from '../conversational/UserContextEva
 import { StrategySelector } from '../conversational/StrategySelector';
 import { createDefaultRegistry } from '../conversational/ArchetypeRegistry';
 import { BasketProvider } from '../state/BasketContext';
+import { TranslationProvider } from '../translation/TranslationContext';
 import { clearRegistry } from '../pie/PIERenderer';
 import type { BasketState } from '../types';
 
@@ -48,14 +49,16 @@ function renderCheckoutPage(
   } = options;
 
   return render(
-    <BasketProvider initialState={basketState}>
-      <CheckoutPage
-        controller={controller}
-        userId={userId}
-        archetypeNames={archetypeNames}
-        onArchetypeSwitch={onArchetypeSwitch}
-      />
-    </BasketProvider>,
+    <TranslationProvider>
+      <BasketProvider initialState={basketState}>
+        <CheckoutPage
+          controller={controller}
+          userId={userId}
+          archetypeNames={archetypeNames}
+          onArchetypeSwitch={onArchetypeSwitch}
+        />
+      </BasketProvider>
+    </TranslationProvider>,
   );
 }
 

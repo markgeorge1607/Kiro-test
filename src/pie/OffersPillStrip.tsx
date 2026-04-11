@@ -1,5 +1,9 @@
 import React from 'react';
 import type { PIEComponentProps } from '../types';
+import { useTranslation } from '../translation/TranslationContext';
+
+// ── Local images from /images folder ─────────────────────────────────
+import imgJetPlusLogo from '../../images/JET+ - read description.png';
 
 interface Offer {
   id: string;
@@ -22,6 +26,7 @@ const OffersPillStrip: React.FC<PIEComponentProps> = ({
   directive,
   onInteraction,
 }) => {
+  const { t } = useTranslation();
   const offers = directive.props.offers as Offer[] | undefined;
 
   if (!offers || offers.length === 0) {
@@ -160,7 +165,7 @@ const OffersPillStrip: React.FC<PIEComponentProps> = ({
           }
         }
       `}</style>
-      <div className="pie-offers-strip" role="list" aria-label="Available offers">
+      <div className="pie-offers-strip" role="list" aria-label={t("Available offers")}>
         {offers.map((offer) => {
           const isJetPlus = offer.variant === 'jetplus';
           const showLogo = isJetPlus && !firstJetPlusSeen;
@@ -177,7 +182,7 @@ const OffersPillStrip: React.FC<PIEComponentProps> = ({
                 {showLogo && (
                   <img
                     className="pie-offer-card__logo"
-                    src="https://www.figma.com/api/mcp/asset/2386ec55-f3b2-45e1-9456-deeebb850f2f"
+                    src={imgJetPlusLogo}
                     alt=""
                     width={38}
                     height={38}
@@ -185,26 +190,26 @@ const OffersPillStrip: React.FC<PIEComponentProps> = ({
                 )}
 
                 <div className="pie-offer-card__content">
-                  {/* Standard offer tag icon */}
+                  {/* Standard offer tag icon (PIE offer icon) */}
                   {!isJetPlus && (
                     <div className="pie-offer-card__tag-icon">
-                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                        <path d="M6.417 1.167h4.666A1.75 1.75 0 0 1 12.833 2.917v4.666a1.75 1.75 0 0 1-.512 1.238l-4.083 4.083a1.75 1.75 0 0 1-2.476 0L1.679 8.821a1.75 1.75 0 0 1 0-2.476l4.083-4.083a1.75 1.75 0 0 1 1.238-.512v0h-.583ZM9.333 5.25a.583.583 0 1 0 0-1.167.583.583 0 0 0 0 1.167Z" stroke="#242E30" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <svg xmlns="http://www.w3.org/2000/svg" role="presentation" focusable={false} width="14" height="14" viewBox="0 0 16 16" fill="#242E30" aria-hidden="true">
+                        <path d="M7.676 14.939 1.087 8.35l6.38-6.387a1.409 1.409 0 0 1 1.12-.403l5.337.534.533 5.346a1.373 1.373 0 0 1-.393 1.111L7.676 14.94ZM2.942 8.35l4.734 4.734 5.46-5.46-.411-4.331-4.27-.42L2.942 8.35Zm7.683-3.85a.875.875 0 1 0 0 1.75.875.875 0 0 0 0-1.75Z" />
                       </svg>
                     </div>
                   )}
 
                   <div className={`pie-offer-card__text-block ${isJetPlus ? 'pie-offer-card__text-block--jetplus' : 'pie-offer-card__text-block--standard'}`}>
-                    <p className="pie-offer-card__title">{offer.text}</p>
+                    <p className="pie-offer-card__title">{t(offer.text)}</p>
                     {offer.subtitle && (
-                      <p className="pie-offer-card__subtitle">{offer.subtitle}</p>
+                      <p className="pie-offer-card__subtitle">{t(offer.subtitle)}</p>
                     )}
                   </div>
                 </div>
 
-                {/* Arrow Right chevron */}
-                <svg className="pie-offer-card__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M6 12l4-4-4-4" stroke="rgba(0,0,0,0.76)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                {/* Arrow Right chevron (PIE chevron-right) */}
+                <svg className="pie-offer-card__arrow" xmlns="http://www.w3.org/2000/svg" role="presentation" focusable={false} width="16" height="16" viewBox="0 0 16 16" fill="rgba(0,0,0,0.76)" aria-hidden="true">
+                  <path d="M5.044 13.18 10.399 8 5 2.82l.875-.962 5.539 5.346a1.164 1.164 0 0 1 0 1.636l-5.469 5.285-.901-.945Z" />
                 </svg>
               </button>
             </div>

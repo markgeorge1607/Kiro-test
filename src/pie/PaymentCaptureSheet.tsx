@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import type { PIEComponentProps, SavedCard, PaymentMethod } from '../types';
+import { useTranslation } from '../translation/TranslationContext';
 
-// ── Figma asset URLs ─────────────────────────────────────────────────
-const imgMastercard = 'https://www.figma.com/api/mcp/asset/d88eca9a-1932-4b9c-be39-2da09e0d3f2f';
-const imgAmex = 'https://www.figma.com/api/mcp/asset/08409ea0-607d-4dcb-bfce-401d04748085';
-const imgInfoIcon = 'https://www.figma.com/api/mcp/asset/29262134-58be-40fa-9555-3f056d217468';
+// ── PIE icon SVGs (@justeattakeaway/pie-icons) ──────────────────────
+const pieIcon = (svgPath: string, color = '#242e30') =>
+  `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" role="presentation" focusable="false" fill="${color}" viewBox="0 0 16 16">${svgPath}</svg>`)}`;
+
+// Card brand icons remain as inline SVGs (no PIE equivalent)
+const imgMastercard = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="20" viewBox="0 0 32 20"><rect width="32" height="20" rx="3" fill="#f5f3f1"/><circle cx="12" cy="10" r="6" fill="#eb001b" opacity="0.8"/><circle cx="20" cy="10" r="6" fill="#f79e1b" opacity="0.8"/></svg>')}`;
+const imgAmex = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="20" viewBox="0 0 32 20"><rect width="32" height="20" rx="3" fill="#006fcf"/><text x="16" y="13" text-anchor="middle" fill="white" font-family="Arial" font-weight="700" font-size="7">AMEX</text></svg>')}`;
+const imgInfoIcon = pieIcon('<path d="M8 1.219A6.781 6.781 0 1 0 14.781 8 6.79 6.79 0 0 0 8 1.219Zm0 12.25A5.469 5.469 0 1 1 8 2.53a5.469 5.469 0 0 1 0 10.938ZM7.344 7.29h1.312v3.334H7.344V7.291Zm1.531-1.916a.875.875 0 1 1-1.75 0 .875.875 0 0 1 1.75 0Z"/>', '#3c4c4f');
 
 // ── Style constants (PIE Design System) ──────────────────────────────
 const font = "'JET Sans Digital', Arial, sans-serif";
@@ -110,14 +115,14 @@ const inputStyle: React.CSSProperties = {
 // ── Sub-components ───────────────────────────────────────────────────
 
 const ChevronLeftIcon: React.FC = () => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-    <path d="M12.5 15L7.5 10L12.5 5" stroke={colorDefault} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  <svg xmlns="http://www.w3.org/2000/svg" role="presentation" focusable={false} width="20" height="20" viewBox="0 0 16 16" fill={colorDefault} aria-hidden="true">
+    <path d="M10.96 2.82 5.605 8l5.399 5.197-.875.963-5.565-5.364a1.164 1.164 0 0 1 0-1.671l5.495-5.25.901.945Z" />
   </svg>
 );
 
 const PlusIcon: React.FC = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M12 5V19M5 12H19" stroke={colorDefault} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  <svg xmlns="http://www.w3.org/2000/svg" role="presentation" focusable={false} width="24" height="24" viewBox="0 0 16 16" fill={colorDefault} aria-hidden="true">
+    <path d="M14.125 7.344H8.656V1.875H7.344v5.469H1.875v1.312h5.469v5.469h1.312V8.656h5.469V7.344Z" />
   </svg>
 );
 
@@ -186,6 +191,7 @@ type SheetView = 'available-cards' | 'add-card';
  * Registered as componentType: "payment-capture-sheet"
  */
 const PaymentCaptureSheet: React.FC<PIEComponentProps> = ({ directive, onInteraction }) => {
+  const { t } = useTranslation();
   const [localSavedCards, setLocalSavedCards] = useState<SavedCard[]>(
     Array.isArray(directive.props.savedCards) ? directive.props.savedCards as SavedCard[] : []
   );
@@ -312,7 +318,7 @@ const PaymentCaptureSheet: React.FC<PIEComponentProps> = ({ directive, onInterac
         className="pcs-sheet"
         role="dialog"
         aria-modal="true"
-        aria-label={view === 'available-cards' ? 'Credit cards' : 'Add Credit card'}
+        aria-label={view === 'available-cards' ? t('Credit cards') : t('Add Credit card')}
         tabIndex={-1}
         data-testid="payment-capture-sheet"
         style={sheetStyle}
@@ -365,7 +371,9 @@ interface AvailableCardsViewProps {
 
 const AvailableCardsView: React.FC<AvailableCardsViewProps> = ({
   savedCards, selectedCardId, onSelectCard, onAddCard, onCancel, onStartFreeTrial,
-}) => (
+}) => {
+  const { t } = useTranslation();
+  return (
   <>
     {/* Header */}
     <div style={{ padding: '8px 16px 8px 16px' }}>
@@ -376,7 +384,7 @@ const AvailableCardsView: React.FC<AvailableCardsViewProps> = ({
           lineHeight: '28px', color: colorDefault, fontFamily: font,
         }}
       >
-        Credit cards
+        {t('Credit cards')}
       </h2>
     </div>
 
@@ -404,7 +412,7 @@ const AvailableCardsView: React.FC<AvailableCardsViewProps> = ({
             lineHeight: '24px', color: colorDefault, fontFamily: bodyFont,
             flex: 1,
           }}>
-            Your details are securely stored with our payment processing partner using bank-grade encryption
+            {t('Your details are securely stored with our payment processing partner using bank-grade encryption')}
           </p>
         </div>
       </div>
@@ -440,7 +448,7 @@ const AvailableCardsView: React.FC<AvailableCardsViewProps> = ({
                   margin: 0, fontSize: 16, fontWeight: 400,
                   lineHeight: '24px', color: colorSubdued, fontFamily: bodyFont,
                 }}>
-                  Ending {card.lastFour}
+                  {t('Ending')} {card.lastFour}
                 </p>
               </div>
               <RadioIndicator selected={selectedCardId === card.id} />
@@ -482,7 +490,7 @@ const AvailableCardsView: React.FC<AvailableCardsViewProps> = ({
             lineHeight: '24px', color: colorDefault, fontFamily: font,
             fontStyle: 'italic',
           }}>
-            Add Credit card
+            {t('Add Credit card')}
           </span>
         </button>
       </div>
@@ -493,9 +501,9 @@ const AvailableCardsView: React.FC<AvailableCardsViewProps> = ({
           margin: 0, fontSize: 12, fontWeight: 400,
           lineHeight: '16px', color: colorDefault, fontFamily: font,
         }}>
-          You can cancel Just Eat+ anytime. By joining, you agree to the{' '}
-          <span style={{ textDecoration: 'underline' }}>Just Eat+ terms</span>
-          , a free trial, and £1.99/month after. Cancel 48 hours before the trial ends to avoid charges.
+          {t('You can cancel Just Eat+ anytime. By joining, you agree to the')}{' '}
+          <span style={{ textDecoration: 'underline' }}>{t('Just Eat+ terms')}</span>
+          {t(', a free trial, and £1.99/month after. Cancel 48 hours before the trial ends to avoid charges.')}
         </p>
       </div>
     </div>
@@ -519,7 +527,7 @@ const AvailableCardsView: React.FC<AvailableCardsViewProps> = ({
           fontStyle: 'italic',
         }}
       >
-        Cancel
+        {t('Cancel')}
       </button>
       <button
         type="button"
@@ -536,11 +544,12 @@ const AvailableCardsView: React.FC<AvailableCardsViewProps> = ({
           fontStyle: 'italic',
         }}
       >
-        Start free trial
+        {t('Start free trial')}
       </button>
     </div>
   </>
-);
+  );
+};
 
 // ── Add Card View ────────────────────────────────────────────────────
 
@@ -567,7 +576,9 @@ const AddCardView: React.FC<AddCardViewProps> = ({
   cvv, onCvvChange,
   cardholderName, onCardholderNameChange,
   isValid, onCancel, onAddCard,
-}) => (
+}) => {
+  const { t } = useTranslation();
+  return (
   <>
     {/* Header with back button */}
     <div style={{ padding: '8px 16px 8px 16px' }}>
@@ -577,7 +588,7 @@ const AddCardView: React.FC<AddCardViewProps> = ({
             type="button"
             data-testid="pcs-back-button"
             onClick={onBack}
-            aria-label="Back to available cards"
+            aria-label={t('Back to available cards')}
             style={{
               display: 'flex', alignItems: 'center',
               padding: 10,
@@ -595,7 +606,7 @@ const AddCardView: React.FC<AddCardViewProps> = ({
             lineHeight: '28px', color: colorDefault, fontFamily: font,
           }}
         >
-          Add Credit card
+          {t('Add Credit card')}
         </h2>
       </div>
     </div>
@@ -607,7 +618,7 @@ const AddCardView: React.FC<AddCardViewProps> = ({
           htmlFor="pcs-card-number"
           style={{ fontSize: 14, fontWeight: 700, lineHeight: '20px', color: colorDefault, fontFamily: bodyFont, display: 'block' }}
         >
-          Cardnumber
+          {t('Cardnumber')}
         </label>
         <div style={{ height: 4 }} />
         <input
@@ -618,7 +629,7 @@ const AddCardView: React.FC<AddCardViewProps> = ({
           placeholder="1234 5678 9012 3456"
           value={cardNumber}
           onChange={(e) => onCardNumberChange(e.target.value)}
-          aria-label="Card number"
+          aria-label={t('Card number')}
           autoComplete="cc-number"
           style={inputStyle}
         />
@@ -630,7 +641,7 @@ const AddCardView: React.FC<AddCardViewProps> = ({
             htmlFor="pcs-expiry-date"
             style={{ fontSize: 14, fontWeight: 700, lineHeight: '20px', color: colorDefault, fontFamily: bodyFont, display: 'block' }}
           >
-            Expiration date
+            {t('Expiration date')}
           </label>
           <div style={{ height: 4 }} />
           <input
@@ -641,7 +652,7 @@ const AddCardView: React.FC<AddCardViewProps> = ({
             placeholder="MM/YY"
             value={expiryDate}
             onChange={(e) => onExpiryDateChange(e.target.value)}
-            aria-label="Expiration date"
+            aria-label={t('Expiration date')}
             autoComplete="cc-exp"
             style={inputStyle}
           />
@@ -651,7 +662,7 @@ const AddCardView: React.FC<AddCardViewProps> = ({
             htmlFor="pcs-cvv"
             style={{ fontSize: 14, fontWeight: 700, lineHeight: '20px', color: colorDefault, fontFamily: bodyFont, display: 'block' }}
           >
-            CVC / CVV
+            {t('CVC / CVV')}
           </label>
           <div style={{ height: 4 }} />
           <input
@@ -663,7 +674,7 @@ const AddCardView: React.FC<AddCardViewProps> = ({
             maxLength={4}
             value={cvv}
             onChange={(e) => onCvvChange(e.target.value)}
-            aria-label="CVV"
+            aria-label={t('CVV')}
             autoComplete="cc-csc"
             style={inputStyle}
           />
@@ -675,17 +686,17 @@ const AddCardView: React.FC<AddCardViewProps> = ({
           htmlFor="pcs-cardholder-name"
           style={{ fontSize: 14, fontWeight: 700, lineHeight: '20px', color: colorDefault, fontFamily: bodyFont, display: 'block' }}
         >
-          Cardholder name
+          {t('Cardholder name')}
         </label>
         <div style={{ height: 4 }} />
         <input
           id="pcs-cardholder-name"
           data-testid="pcs-cardholder-name"
           type="text"
-          placeholder="Name on card"
+          placeholder={t('Name on card')}
           value={cardholderName}
           onChange={(e) => onCardholderNameChange(e.target.value)}
-          aria-label="Cardholder name"
+          aria-label={t('Cardholder name')}
           autoComplete="cc-name"
           style={inputStyle}
         />
@@ -708,7 +719,7 @@ const AddCardView: React.FC<AddCardViewProps> = ({
           fontStyle: 'italic',
         }}
       >
-        Cancel
+        {t('Cancel')}
       </button>
       <button
         type="button"
@@ -725,10 +736,11 @@ const AddCardView: React.FC<AddCardViewProps> = ({
           fontStyle: 'italic',
         }}
       >
-        Add card
+        {t('Add card')}
       </button>
     </div>
   </>
-);
+  );
+};
 
 export default PaymentCaptureSheet;

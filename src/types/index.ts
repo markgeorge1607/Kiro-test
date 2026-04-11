@@ -121,3 +121,16 @@ export interface CardEntryData {
 export type PaymentMethod =
   | { type: 'saved-card'; cardId: string }
   | { type: 'new-card'; card: CardEntryData };
+
+// ── Translation ──────────────────────────────────────────────────────
+
+export type Locale = 'en' | 'de' | 'es' | 'fr' | 'nl';
+
+export interface TranslationRequest {
+  sourceTexts: string[];
+  targetLocale: string;
+}
+
+export interface TranslationResponse {
+  translations: string[];
+}

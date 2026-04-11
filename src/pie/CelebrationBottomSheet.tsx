@@ -1,11 +1,22 @@
 import React, { useEffect, useRef, useCallback } from 'react';
+import Lottie from 'lottie-react';
 import type { PIEComponentProps } from '../types';
+import { useTranslation } from '../translation/TranslationContext';
 
-// ── Figma asset URLs ─────────────────────────────────────────────────
-const imgBackground = 'https://www.figma.com/api/mcp/asset/4acbe990-de34-471f-ae50-75be44c945be';
-const imgJetLogo = 'https://www.figma.com/api/mcp/asset/60adb290-bbcf-4188-8e1b-51f7979e8581';
-const imgConfetti = 'https://www.figma.com/api/mcp/asset/013604d7-432a-4f19-9f51-0426314fe283';
-const imgCheckCircle = 'https://www.figma.com/api/mcp/asset/b404a157-9d9a-496b-adb3-d99563c05cc2';
+// ── Local images from /images folder ─────────────────────────────────
+import imgJetLogo from '../../images/JET+ - read description.png';
+
+// ── Lottie confetti animation ────────────────────────────────────────
+import confettiAnimationData from '../../Animation/_03 Jet + Confetti (1).json';
+
+// ── PIE icon SVGs (@justeattakeaway/pie-icons) ──────────────────────
+const pieIcon = (svgPath: string, color = '#242e30') =>
+  `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" role="presentation" focusable="false" fill="${color}" viewBox="0 0 16 16">${svgPath}</svg>`)}`;
+
+const imgCheckCircle = pieIcon('<path d="M8 1.478A6.524 6.524 0 0 0 1.478 8c0 3.6 2.922 6.522 6.522 6.522S14.52 11.6 14.52 8 11.6 1.478 8 1.478Zm-.27 8.844a1.006 1.006 0 0 1-1.47.009L4.696 8.616l.966-.878L6.99 9.2l3.34-3.626.956.887-3.565 3.87.008-.01Z"/>', '#4caf50');
+
+// Header gradient — soft peach-orange fading smoothly to white (PIE product orange tonal)
+const headerGradient = 'linear-gradient(to bottom, rgba(243,104,5,0.12) 0%, rgba(243,104,5,0.06) 50%, rgba(243,104,5,0) 100%)';
 
 // ── Style constants (PIE Design System) ──────────────────────────────
 const font = "'JET Sans Digital', Arial, sans-serif";
@@ -26,6 +37,7 @@ const bodyFont = "'Takeaway Sans', 'JET Sans Digital', Arial, sans-serif";
  * Registered as componentType: "celebration-sheet"
  */
 const CelebrationBottomSheet: React.FC<PIEComponentProps> = ({ directive, onInteraction }) => {
+  const { t } = useTranslation();
   const bodyMessage = (directive.props.bodyMessage as string) ?? '';
   const autoDismissDuration =
     typeof directive.props.autoDismissDuration === 'number' && directive.props.autoDismissDuration > 0
@@ -108,6 +120,7 @@ const CelebrationBottomSheet: React.FC<PIEComponentProps> = ({ directive, onInte
         @media (prefers-reduced-motion: reduce) {
           .celebration-sheet { animation: none !important; }
           .celebration-confetti { animation: none !important; }
+          .celebration-confetti svg { animation-play-state: paused !important; }
         }
       `}</style>
 
@@ -129,7 +142,7 @@ const CelebrationBottomSheet: React.FC<PIEComponentProps> = ({ directive, onInte
         className="celebration-sheet"
         role="dialog"
         aria-modal="true"
-        aria-label="JET+ trial activation confirmed"
+        aria-label={t("JET+ trial activation confirmed")}
         tabIndex={-1}
         data-testid="celebration-sheet"
         style={{
@@ -144,25 +157,32 @@ const CelebrationBottomSheet: React.FC<PIEComponentProps> = ({ directive, onInte
           animation: 'celebration-slide-up 0.3s ease-out',
         }}
       >
-        {/* Confetti overlay — sits just above the modal top (Req 5.1, 5.3, 5.4) */}
-        <img
-          alt=""
-          src={imgConfetti}
+        {/* Confetti Lottie overlay — sits just above the modal top (Req 5.1, 5.3, 5.4) */}
+        <div
           aria-hidden="true"
           className="celebration-confetti"
           data-testid="celebration-confetti"
           style={{
-            position: 'absolute', bottom: 'calc(100% - 60px)', left: 12,
-            width: '90%', maxWidth: 334, height: 'auto', aspectRatio: '334/245',
-            objectFit: 'cover',
+            position: 'absolute',
+            bottom: 'calc(100% - 60px)',
+            left: 0,
+            right: 0,
+            height: 'auto',
             pointerEvents: 'none',
             animation: 'celebration-fade-in 0.5s ease-out',
           }}
-        />
+        >
+          <Lottie
+            animationData={confettiAnimationData}
+            loop={false}
+            autoplay={true}
+            style={{ width: '100%', height: 'auto' }}
+          />
+        </div>
         {/* Inner content wrapper with clipped corners */}
         <div style={{ borderRadius: '12px 12px 0 0', overflow: 'hidden', background: 'white' }}>
         {/* Header section (Req 1.2) */}
-        <div style={{ position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', overflow: 'hidden', background: headerGradient }}>
 
           {/* Pull tab overlaid on header */}
           <div style={{ position: 'absolute', top: 8, left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 2 }}>
@@ -176,16 +196,6 @@ const CelebrationBottomSheet: React.FC<PIEComponentProps> = ({ directive, onInte
               }}
             />
           </div>
-          <img
-            alt=""
-            src={imgBackground}
-            data-testid="celebration-background"
-            style={{
-              position: 'absolute', inset: 0,
-              width: '100%', height: '100%',
-              objectFit: 'cover',
-            }}
-          />
 
           {/* Title + Logo row */}
           <div style={{
@@ -203,8 +213,8 @@ const CelebrationBottomSheet: React.FC<PIEComponentProps> = ({ directive, onInte
                   color: colorDefault, fontFamily: font,
                 }}
               >
-                Welcome to<br />
-                <span style={{ paddingLeft: 24 }}>Just Eat+</span>
+                {t('Welcome to')}<br />
+                <span style={{ paddingLeft: 24 }}>{t('Just Eat+')}</span>
               </p>
             </div>
 
@@ -230,7 +240,7 @@ const CelebrationBottomSheet: React.FC<PIEComponentProps> = ({ directive, onInte
               fontFamily: bodyFont,
             }}
           >
-            {bodyMessage}
+            {t(bodyMessage)}
           </p>
         </div>
 
@@ -259,14 +269,14 @@ const CelebrationBottomSheet: React.FC<PIEComponentProps> = ({ directive, onInte
                 lineHeight: '24px', color: colorContentDefault,
                 fontFamily: bodyFont,
               }}>
-                JET+ trial active
+                {t('JET+ trial active')}
               </p>
               <p style={{
                 margin: 0, fontSize: 16, fontWeight: 400,
                 lineHeight: '24px', color: colorSubdued,
                 fontFamily: bodyFont,
               }}>
-                Delivery fee removed
+                {t('Delivery fee removed')}
               </p>
             </div>
           </div>

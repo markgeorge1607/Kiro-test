@@ -1,13 +1,25 @@
 import React, { useState } from 'react';
+import { useTranslation } from '../translation/TranslationContext';
 
-// ── Figma asset URLs ─────────────────────────────────────────────────
-const imgBackground = 'https://www.figma.com/api/mcp/asset/c4116312-5c7e-49ac-93af-56bb24ea0a98';
-const imgConfetti = 'https://www.figma.com/api/mcp/asset/af42269a-2a8f-4275-8f6c-7533b3fc26b0';
-const imgJetLogo = 'https://www.figma.com/api/mcp/asset/a20b3e7f-0620-4306-893a-472bc2b6d085';
-const imgCredit = 'https://www.figma.com/api/mcp/asset/e2804c89-9e3d-4011-a2f4-8c87e00198f8';
-const imgOffers = 'https://www.figma.com/api/mcp/asset/86ce7640-4263-4d8f-aaba-d92614eef5bf';
-const imgDelivery = 'https://www.figma.com/api/mcp/asset/7dcd8eac-22ad-46aa-a4ea-b192bd260238';
-const imgClose = 'https://www.figma.com/api/mcp/asset/0ab425f7-6bef-47f4-a5ce-a1801bbc86cd';
+// ── Local images from /images folder ─────────────────────────────────
+import imgJetLogo from '../../images/JET+ - read description.png';
+import imgCreditImg from '../../images/light-jetplus-account-credit.png';
+import imgOffersImg from '../../images/light-jetplus-exclusive-offers-1.png';
+import imgDeliveryImg from '../../images/light-jetplus-free-delivery.png';
+
+// ── PIE icon SVGs (@justeattakeaway/pie-icons) ──────────────────────
+const pieIcon = (svgPath: string, color = '#242e30') =>
+  `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" role="presentation" focusable="false" fill="${color}" viewBox="0 0 16 16">${svgPath}</svg>`)}`;
+
+const imgClose = pieIcon('<path d="M11.868 3.205 8 7.073 4.133 3.205l-.928.928L7.073 8l-3.868 3.868.928.927L8 8.928l3.868 3.867.927-.927L8.928 8l3.867-3.867-.927-.928Z"/>');
+
+// Inline decorative assets (no PIE equivalent)
+const headerGradient = 'linear-gradient(to bottom, rgba(243,104,5,0.12) 0%, rgba(243,104,5,0.06) 50%, rgba(243,104,5,0) 100%)';
+
+// Benefit row icons — use local images from /images folder
+const imgCredit = imgCreditImg;
+const imgOffers = imgOffersImg;
+const imgDelivery = imgDeliveryImg;
 
 // ── Style constants (PIE Design System) ──────────────────────────────
 const font = "'JET Sans Digital', Arial, sans-serif";
@@ -40,10 +52,14 @@ const BenefitRow: React.FC<BenefitRowProps> = ({ icon, title, subtitle }) => (
   </div>
 );
 
-// ── Chevron SVG icon ─────────────────────────────────────────────────
+// ── Chevron SVG icon (PIE chevron-down) ──────────────────────────────
 const ChevronDown: React.FC<{ rotated?: boolean }> = ({ rotated }) => (
   <svg
-    width="24" height="24" viewBox="0 0 24 24" fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    role="presentation"
+    focusable={false}
+    width="24" height="24" viewBox="0 0 16 16"
+    fill={colorDefault}
     aria-hidden="true"
     style={{
       transition: 'transform 0.2s ease',
@@ -51,7 +67,7 @@ const ChevronDown: React.FC<{ rotated?: boolean }> = ({ rotated }) => (
       flexShrink: 0,
     }}
   >
-    <path d="M6 9l6 6 6-6" stroke={colorDefault} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M2.82 5.044 8 10.399 13.197 5l.963.875-5.364 5.565a1.164 1.164 0 0 1-1.636 0L1.875 5.945l.945-.901Z" />
   </svg>
 );
 
@@ -129,11 +145,12 @@ export interface NudgeBottomSheetProps {
 const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
   archetype, body, onStartTrial, onClose,
 }) => {
+  const { t } = useTranslation();
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   const heroTitle = archetype === 'value-seeker'
-    ? 'Alex, did you know?'
-    : 'Stop paying the convenience tax, Sam!';
+    ? t('Alex, did you know?')
+    : t('Stop paying the convenience tax, Sam!');
 
   const toggleFaq = (index: number) => {
     setOpenFaqIndex(prev => (prev === index ? null : index));
@@ -166,7 +183,7 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
         className="nudge-bottom-sheet"
         role="dialog"
         aria-modal="true"
-        aria-label="JET+ trial offer"
+        aria-label={t("JET+ trial offer")}
         style={{
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1000,
           background: 'white', borderRadius: '16px 16px 0 0',
@@ -197,19 +214,8 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
 
           {/* ── Hero section with background + confetti + JET+ logo ── */}
           <div style={{ position: 'relative', flexShrink: 0 }}>
-            {/* Background image area */}
-            <div style={{ position: 'relative', height: 160, overflow: 'hidden' }}>
-              <img alt="" src={imgBackground} style={{
-                position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover',
-              }} />
-              {/* Confetti decorations */}
-              <img alt="" src={imgConfetti} style={{
-                position: 'absolute', top: -63, left: 80, width: 379, height: 237, opacity: 0.3, pointerEvents: 'none',
-              }} />
-              <img alt="" src={imgConfetti} style={{
-                position: 'absolute', top: 53, left: -100, width: 379, height: 237, opacity: 0.3,
-                pointerEvents: 'none', transform: 'rotate(180deg)',
-              }} />
+            {/* Background gradient area */}
+            <div style={{ position: 'relative', height: 160, overflow: 'hidden', background: headerGradient }}>
               {/* JET+ logo */}
               <div style={{
                 position: 'absolute', top: 18, left: '50%', transform: 'translateX(-50%)',
@@ -243,9 +249,9 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
 
             {/* Benefit rows */}
             <div style={{ padding: '16px 8px 0', display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <BenefitRow icon={imgCredit} title="£10 credit" subtitle="use up to £5 credit daily." />
-              <BenefitRow icon={imgOffers} title="Exclusive offers" subtitle="from best-loved brands." />
-              <BenefitRow icon={imgDelivery} title="5 free deliveries" subtitle="Refreshes each month" />
+              <BenefitRow icon={imgCredit} title={t("£10 credit")} subtitle={t("use up to £5 credit daily.")} />
+              <BenefitRow icon={imgOffers} title={t("Exclusive offers")} subtitle={t("from best-loved brands.")} />
+              <BenefitRow icon={imgDelivery} title={t("5 free deliveries")} subtitle={t("Refreshes each month")} />
             </div>
           </div>
 
@@ -260,14 +266,14 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
               margin: 0, padding: '0 16px', fontSize: 16, fontWeight: 700,
               lineHeight: '24px', color: colorDefault, fontFamily: bodyFont,
             }}>
-              FAQs
+              {t('FAQs')}
             </p>
             <div>
               {faqItems.map((faq, index) => (
                 <AccordionItem
                   key={index}
-                  question={faq.question}
-                  answer={faq.answer}
+                  question={t(faq.question)}
+                  answer={t(faq.answer)}
                   isOpen={openFaqIndex === index}
                   onToggle={() => toggleFaq(index)}
                   showDivider={index < faqItems.length - 1}
@@ -294,7 +300,7 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
               fontStyle: 'italic',
             }}
           >
-            Unlock benefits
+            {t('Unlock benefits')}
           </button>
           <button
             type="button"
@@ -306,7 +312,7 @@ const NudgeBottomSheet: React.FC<NudgeBottomSheetProps> = ({
               lineHeight: '24px', cursor: 'pointer', fontFamily: font, textAlign: 'center',
             }}
           >
-            No thanks
+            {t('No thanks')}
           </button>
         </div>
       </div>

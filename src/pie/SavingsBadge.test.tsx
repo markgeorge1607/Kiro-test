@@ -1,6 +1,8 @@
+import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import SavingsBadge from './SavingsBadge';
+import { TranslationProvider } from '../translation/TranslationContext';
 import type { UIDirective, PIEInteractionEvent } from '../types';
 
 // ── Helpers ──────────────────────────────────────────────────────────
@@ -11,18 +13,22 @@ function makeDirective(
   return { componentType: 'savings-badge', props };
 }
 
+function renderWithTranslation(ui: React.ReactElement) {
+  return render(<TranslationProvider>{ui}</TranslationProvider>);
+}
+
 // ── Tests ────────────────────────────────────────────────────────────
 
 describe('SavingsBadge', () => {
   // ── Rendering ─────────────────────────────────────────────────────
 
   it('renders a button element', () => {
-    render(<SavingsBadge directive={makeDirective()} />);
+    renderWithTranslation(<SavingsBadge directive={makeDirective()} />);
     expect(screen.getByRole('button', { name: /savings badge/i })).toBeInTheDocument();
   });
 
   it('applies the position as a data attribute', () => {
-    render(
+    renderWithTranslation(
       <SavingsBadge
         directive={makeDirective({ position: 'checkout-button' })}
       />,
@@ -32,7 +38,7 @@ describe('SavingsBadge', () => {
   });
 
   it('defaults position to "default" when not provided', () => {
-    render(<SavingsBadge directive={makeDirective()} />);
+    renderWithTranslation(<SavingsBadge directive={makeDirective()} />);
     const button = screen.getByRole('button');
     expect(button).toHaveAttribute('data-position', 'default');
   });
@@ -40,7 +46,7 @@ describe('SavingsBadge', () => {
   // ── Animation ─────────────────────────────────────────────────────
 
   it('applies vibrate animation class when animationType is "vibrate"', () => {
-    render(
+    renderWithTranslation(
       <SavingsBadge
         directive={makeDirective({ animationType: 'vibrate' })}
       />,
@@ -50,13 +56,13 @@ describe('SavingsBadge', () => {
   });
 
   it('does not apply vibrate class when animationType is absent', () => {
-    render(<SavingsBadge directive={makeDirective()} />);
+    renderWithTranslation(<SavingsBadge directive={makeDirective()} />);
     const button = screen.getByRole('button');
     expect(button.className).not.toContain('pie-savings-badge--vibrate');
   });
 
   it('does not apply vibrate class for other animation types', () => {
-    render(
+    renderWithTranslation(
       <SavingsBadge
         directive={makeDirective({ animationType: 'bounce' })}
       />,
@@ -70,7 +76,7 @@ describe('SavingsBadge', () => {
   it('fires tapped interaction event on click', () => {
     const handler = vi.fn<(event: PIEInteractionEvent) => void>();
 
-    render(
+    renderWithTranslation(
       <SavingsBadge
         directive={makeDirective()}
         onInteraction={handler}
@@ -87,19 +93,19 @@ describe('SavingsBadge', () => {
   });
 
   it('does not throw when clicked without onInteraction callback', () => {
-    render(<SavingsBadge directive={makeDirective()} />);
+    renderWithTranslation(<SavingsBadge directive={makeDirective()} />);
     expect(() => fireEvent.click(screen.getByRole('button'))).not.toThrow();
   });
 
   // ── Accessibility ─────────────────────────────────────────────────
 
   it('has an accessible label', () => {
-    render(<SavingsBadge directive={makeDirective()} />);
+    renderWithTranslation(<SavingsBadge directive={makeDirective()} />);
     expect(screen.getByRole('button')).toHaveAttribute('aria-label', 'Savings badge');
   });
 
   it('renders as a button with type="button"', () => {
-    render(<SavingsBadge directive={makeDirective()} />);
+    renderWithTranslation(<SavingsBadge directive={makeDirective()} />);
     expect(screen.getByRole('button')).toHaveAttribute('type', 'button');
   });
 });

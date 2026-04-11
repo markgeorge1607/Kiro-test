@@ -13,6 +13,8 @@ import ArchetypeToggle from '../pie/ArchetypeToggle';
 import CelebrationBottomSheet from '../pie/CelebrationBottomSheet';
 import PaymentCaptureSheet from '../pie/PaymentCaptureSheet';
 import { useBasket } from '../state/BasketContext';
+import { useTranslation } from '../translation/TranslationContext';
+import { translateDirectiveProps } from '../translation/translateDirectiveProps';
 
 // ── Props ────────────────────────────────────────────────────────────
 
@@ -49,6 +51,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   onArchetypeSwitch,
 }) => {
   const { state: basket, activateTrial } = useBasket();
+  const { t } = useTranslation();
   const [nudgeEvent, setNudgeEvent] = useState<NudgeEvent | null>(null);
   const [activeArchetype, setActiveArchetype] = useState<string | null>(null);
 
@@ -138,7 +141,11 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const renderPIEComponent = () => {
     if (!nudgeEvent) return null;
 
-    const element = pieRender(nudgeEvent.uiDirective);
+    const translatedDirective = {
+      ...nudgeEvent.uiDirective,
+      props: translateDirectiveProps(nudgeEvent.uiDirective.props, t),
+    };
+    const element = pieRender(translatedDirective);
     if (!element) return null;
 
     // Clone the element to inject the onInteraction handler
@@ -155,7 +162,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         textAlign: 'left',
       }}
     >
-      <h2 style={{ margin: '0 0 16px' }}>Checkout</h2>
+      <h2 style={{ margin: '0 0 16px' }}>{t('Checkout')}</h2>
 
       {/* Archetype Toggle — persistent UI control (Req 13.1, 13.3) */}
       {archetypeNames.length > 0 && activeArchetype && (
@@ -185,20 +192,20 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
       {/* Delivery fee */}
       <div data-testid="delivery-fee" style={{ padding: '8px 0' }}>
-        Delivery fee: £{(basket.deliveryFee / 100).toFixed(2)}
+        {t('Delivery fee:')} £{(basket.deliveryFee / 100).toFixed(2)}
       </div>
 
       {/* Trial status */}
       {basket.trialActive && (
         <div data-testid="trial-status" style={{ padding: '4px 0', color: '#4caf50' }}>
-          ✓ Free trial active
+          ✓ {t('Free trial active')}
         </div>
       )}
 
       {/* Nudge message */}
       {nudgeEvent && (
         <div data-testid="nudge-message" style={{ padding: '12px 0' }}>
-          {nudgeEvent.message}
+          {t(nudgeEvent.message)}
         </div>
       )}
 
@@ -212,7 +219,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         onClick={handleAbandon}
         style={{ marginTop: '16px' }}
       >
-        Cancel order
+        {t('Cancel order')}
       </button>
     </div>
   );

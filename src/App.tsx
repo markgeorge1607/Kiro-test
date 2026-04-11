@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { BasketProvider } from './state/BasketContext';
+import { TranslationProvider } from './translation/TranslationContext';
+import { TranslationService } from './translation/TranslationService';
 import MenuPage from './menu/MenuPage';
 import { CheckoutNudgeController } from './checkout/CheckoutNudgeController';
 import { OfferNudgeController } from './checkout/OfferNudgeController';
@@ -19,6 +21,11 @@ const INITIAL_BASKET: BasketState = {
 
 const App: React.FC = () => {
   const [activeArchetype, setActiveArchetype] = useState('squeezed-saver');
+
+  const translationService = useMemo(
+    () => new TranslationService({ apiKey: import.meta.env.VITE_GEMINI_API_KEY ?? '' }),
+    [],
+  );
 
   const { controller, offerController } = useMemo(() => {
     const registry = createDefaultRegistry();
@@ -47,14 +54,16 @@ const App: React.FC = () => {
     }}>
       <div style={{ width: '100%', overflowX: 'hidden' }}>
         <BasketProvider initialState={INITIAL_BASKET}>
-          <MenuPage
-            controller={controller}
-            offerController={offerController}
-            userId="demo-user"
-            archetypeNames={ARCHETYPE_NAMES}
-            activeArchetype={activeArchetype}
-            onArchetypeSwitch={setActiveArchetype}
-          />
+          <TranslationProvider service={translationService}>
+            <MenuPage
+              controller={controller}
+              offerController={offerController}
+              userId="demo-user"
+              archetypeNames={ARCHETYPE_NAMES}
+              activeArchetype={activeArchetype}
+              onArchetypeSwitch={setActiveArchetype}
+            />
+          </TranslationProvider>
         </BasketProvider>
       </div>
     </div>

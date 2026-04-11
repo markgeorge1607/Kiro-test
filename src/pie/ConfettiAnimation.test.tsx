@@ -30,11 +30,11 @@ describe('ConfettiAnimation', () => {
     expect(screen.getByTestId('confetti-animation')).toBeInTheDocument();
   });
 
-  it('renders confetti particles', () => {
+  it('renders Lottie confetti animation', () => {
     render(<ConfettiAnimation directive={makeDirective()} />);
     const container = screen.getByTestId('confetti-animation');
-    const particles = container.querySelectorAll('.pie-confetti__particle');
-    expect(particles.length).toBeGreaterThan(0);
+    const lottie = container.querySelector('[data-testid="lottie-animation"]');
+    expect(lottie).toBeInTheDocument();
   });
 
   // ── Duration / auto-remove ────────────────────────────────────────
